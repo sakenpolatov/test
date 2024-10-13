@@ -13,15 +13,14 @@ export default function SignIn() {
 		const password = formData.get('password') as string
 
 		const result = await signIn('credentials', {
-			redirect: false,
+			redirect: true, // Указываем, что нужно перенаправление
 			email,
-			password
+			password,
+			callbackUrl: '/dashboard' // Указываем, куда перенаправить после успешного входа
 		})
 
 		if (result?.error) {
 			setError(result.error)
-		} else {
-			router.push('/dashboard')
 		}
 	}
 
