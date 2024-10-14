@@ -100,7 +100,7 @@ export default function LoginForm() {
 
 				<div className='flex justify-center gap-10 items-center'>
 					<GoogleButton />
-					<TelegramWidget botUsername={'NextTelegramAuth_bot'} />
+					<TelegramWidget />
 				</div>
 
 				<p className='text-center text-gray-500 dark:text-gray-300'>

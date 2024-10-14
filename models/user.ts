@@ -5,7 +5,7 @@ export interface IUser extends Document {
 	email?: string
 	password?: string
 	provider: string
-	telegramId?: string
+	telegramId?: string // Добавлено для Telegram ID
 }
 
 const UserSchema: Schema = new mongoose.Schema({
@@ -16,19 +16,19 @@ const UserSchema: Schema = new mongoose.Schema({
 	email: {
 		type: String,
 		unique: true,
-		sparse: true
+		sparse: true // Позволяет null для пользователей без email
 	},
 	password: {
 		type: String
 	},
-	provider: {
-		type: String,
-		default: 'credentials'
-	},
 	telegramId: {
 		type: String,
 		unique: true,
-		sparse: true
+		sparse: true // Позволяет null для пользователей без Telegram ID
+	},
+	provider: {
+		type: String,
+		default: 'credentials'
 	}
 })
 
