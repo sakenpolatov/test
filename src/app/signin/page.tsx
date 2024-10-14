@@ -1,11 +1,10 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+
 import { useState } from 'react'
 
 export default function SignIn() {
-	const router = useRouter()
 	const [error, setError] = useState<string | null>(null)
 
 	const handleSubmit = async (formData: FormData) => {
@@ -13,10 +12,10 @@ export default function SignIn() {
 		const password = formData.get('password') as string
 
 		const result = await signIn('credentials', {
-			redirect: true, // Указываем, что нужно перенаправление
+			redirect: true,
 			email,
 			password,
-			callbackUrl: '/dashboard' // Указываем, куда перенаправить после успешного входа
+			callbackUrl: '/dashboard'
 		})
 
 		if (result?.error) {
