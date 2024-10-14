@@ -1,37 +1,55 @@
 import { NextResponse } from 'next/server'
-import User from '@@/models/user'
-import dbConnect from '@@/lib/mongodb'
-import { verifyTelegramAuth } from '@@/lib/verifyTelegramAuth'
+import User from '@@/models/user' // Убедитесь, что путь правильный
+import dbConnect from '@@/lib/mongodb' // Подключаемся к MongoDB
 
 export async function GET(req: Request) {
-	const url = new URL(req.url)
-	const queryParams = Object.fromEntries(url.searchParams.entries())
+	try {
+		// Подключаемся к базе данных
+		await dbConnect()
 
-	// Верификация данных, отправленных Telegram
-	const isValid = verifyTelegramAuth(queryParams)
+		// Извлекаем данные из запроса (возможно, они передаются как query параметры)
+		const url = new URL(req.url)
+		const queryParams = Object.fromEntries(url.searchParams.entries())
 
-	if (!isValid) {
+		const { id, first_name, last_name, hash, username } = queryParams
+
+		// Проверка, что id и данные Telegram получены
+		if (!id || !first_name || !hash) {
+			return NextResponse.json(
+				{ message: 'Не удалось получить данные из Telegram' },
+				{ status: 400 }
+			)
+		}
+
+		// Проверяем, существует ли пользователь с данным Telegram ID
+		let user = await User.findOne({ telegramId: id })
+
+		// Если пользователь не найден, создаем нового пользователя
+		if (!user) {
+			user = await User.create({
+				name: `${first_name} ${last_name || ''}`,
+				telegramId: id,
+				provider: 'telegram', // Добавляем провайдера telegram
+				username: username || null
+			})
+		} else {
+			// Если пользователь существует, обновляем его провайдера, если это необходимо
+			if (user.provider !== 'telegram') {
+				user.provider = 'telegram'
+				await user.save()
+			}
+		}
+
+		// Возвращаем успешный ответ с информацией о пользователе
+		return NextResponse.json({
+			message: 'Telegram аутентификация успешна',
+			user
+		})
+	} catch (error) {
+		console.error('Ошибка аутентификации через Telegram:', error)
 		return NextResponse.json(
-			{ message: 'Не удалось подтвердить Telegram данные' },
-			{ status: 400 }
+			{ message: 'Произошла ошибка при аутентификации через Telegram', error },
+			{ status: 500 }
 		)
 	}
-
-	// Подключение к базе данных
-	await dbConnect()
-
-	// Поиск пользователя по Telegram ID
-	let user = await User.findOne({ telegramId: queryParams.id })
-
-	// Если пользователь не найден, создаем нового пользователя
-	if (!user) {
-		user = await User.create({
-			name: queryParams.first_name,
-			telegramId: queryParams.id,
-			provider: 'telegram'
-		})
-	}
-
-	// Создание сессии для пользователя
-	return NextResponse.redirect('/') // Указываешь страницу, куда перенаправить после входа
 }
