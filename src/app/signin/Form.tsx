@@ -17,6 +17,8 @@ import { toast } from 'sonner'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { loginSchema } from '@/lib/schemas'
+import GoogleButton from '@@/components/GoogleButton'
+import TelegramWidget from '@@/components/TelegramWidget'
 
 export default function LoginForm() {
 	const router = useRouter()
@@ -93,7 +95,16 @@ export default function LoginForm() {
 				</Button>
 
 				<p className='text-center text-gray-500 dark:text-gray-300'>
-					Нет аккаунта?{' '}
+					Или войти с помощью
+				</p>
+
+				<div className='flex flex-col space-y-3 items-center'>
+					<GoogleButton />
+					<TelegramWidget />
+				</div>
+
+				<p className='text-center text-gray-500 dark:text-gray-300'>
+					У Вас ещё нет аккаунта?{' '}
 					<a href='/signup' className='text-blue-500 hover:underline'>
 						Зарегистрироваться
 					</a>
