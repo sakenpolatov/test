@@ -5,55 +5,48 @@ import dbConnect from '@@/lib/mongodb'
 
 export async function GET(req: NextRequest) {
 	try {
-		console.log('Получен запрос от Telegram')
-
 		const url = new URL(req.url)
 		const queryParams = Object.fromEntries(url.searchParams.entries())
 
-		console.log('Параметры запроса: ', queryParams)
+		console.log('Запрос с параметрами: ', queryParams)
 
 		// Верификация данных от Telegram
 		const isValid = verifyTelegramAuth(queryParams)
+		console.log('Результат верификации: ', isValid)
 
 		if (!isValid) {
-			console.log('Ошибка в верификации данных Telegram')
+			console.log('Ошибка: не прошел верификацию.')
 			return NextResponse.json(
 				{ message: 'Ошибка при проверке данных от Telegram' },
 				{ status: 400 }
 			)
 		}
 
-		console.log('Данные Telegram прошли верификацию')
-
-		// Подключаемся к MongoDB
+		console.log('Подключение к MongoDB...')
 		await dbConnect()
-		console.log('Подключение к MongoDB успешно')
+		console.log('Подключение к MongoDB выполнено')
 
-		// Проверяем наличие пользователя с этим telegramId
 		let user = await User.findOne({ telegramId: queryParams.id })
-		console.log('Проверка наличия пользователя в базе данных')
+		console.log('Результат поиска пользователя: ', user)
 
-		// Если пользователя нет, создаем его
 		if (!user) {
-			console.log('Создание нового пользователя')
+			console.log('Пользователь не найден, создаю нового пользователя.')
 			user = new User({
 				name: queryParams.first_name,
 				telegramId: queryParams.id,
 				provider: 'telegram'
 			})
 			await user.save()
-			console.log('Пользователь создан и сохранен')
-		} else {
-			console.log('Пользователь уже существует')
+			console.log('Пользователь создан: ', user)
 		}
 
-		// Возвращаем успешный ответ
+		console.log('Возвращаю успешный ответ')
 		return NextResponse.json({
 			message: 'Авторизация через Telegram успешна',
 			user
 		})
 	} catch (error) {
-		console.error('Ошибка при авторизации: ', error)
+		console.error('Ошибка при обработке запроса: ', error)
 		return NextResponse.json(
 			{ message: 'Произошла ошибка при аутентификации через Telegram', error },
 			{ status: 500 }
