@@ -9,26 +9,34 @@ export async function POST(req: Request) {
 		const body = await req.json()
 		const { name, email, password } = body
 
+		// Проверка обязательных полей
 		if (!name || !email || !password) {
-			return NextResponse.json({ message: 'Missing fields' }, { status: 400 })
-		}
-
-		const existingUser = await User.findOne({ email })
-		if (existingUser) {
 			return NextResponse.json(
-				{ message: 'User already exists' },
+				{ message: 'Заполните все обязательные поля' },
 				{ status: 400 }
 			)
 		}
 
+		// Проверка, существует ли уже пользователь с таким email
+		const existingUser = await User.findOne({ email })
+		if (existingUser) {
+			return NextResponse.json(
+				{ message: 'Этот email уже зарегистрирован' },
+				{ status: 400 }
+			)
+		}
+
+		// Создание нового пользователя
 		const newUser = await User.create({ name, email, password })
+
 		return NextResponse.json(
-			{ message: 'User registered successfully', newUser },
+			{ message: 'Пользователь успешно зарегистрирован', newUser },
 			{ status: 201 }
 		)
 	} catch (error) {
+		console.error(error)
 		return NextResponse.json(
-			{ message: 'Error registering user', error },
+			{ message: 'Ошибка при регистрации', error },
 			{ status: 500 }
 		)
 	}

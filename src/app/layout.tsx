@@ -1,4 +1,6 @@
+import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
+import { ThemeProvider } from '@@/components/ThemeProvider'
 
 export const metadata = {
 	title: 'TelegramWebApp',
@@ -12,7 +14,17 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang='en'>
-			<body>{children}</body>
+			<body>
+				<ThemeProvider
+					attribute='class'
+					defaultTheme='light'
+					enableSystem
+					disableTransitionOnChange
+				>
+					{children}
+					<Toaster position='top-right' />
+				</ThemeProvider>
+			</body>
 		</html>
 	)
 }

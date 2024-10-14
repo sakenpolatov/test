@@ -1,42 +1,22 @@
-'use client'
+import { auth } from '@@/lib/auth'
+import { redirect } from 'next/navigation'
+import LoginForm from './Form'
 
-import { signIn } from 'next-auth/react'
+export default async function SignIn() {
+	const session = await auth()
 
-import { useState } from 'react'
-
-export default function SignIn() {
-	const [error, setError] = useState<string | null>(null)
-
-	const handleSubmit = async (formData: FormData) => {
-		const email = formData.get('email') as string
-		const password = formData.get('password') as string
-
-		const result = await signIn('credentials', {
-			redirect: true,
-			email,
-			password,
-			callbackUrl: '/'
-		})
-
-		if (result?.error) {
-			setError(result.error)
-		}
+	if (session) {
+		redirect('/')
 	}
 
 	return (
-		<form
-			onSubmit={async e => {
-				e.preventDefault()
-				const formData = new FormData(e.target as HTMLFormElement)
-				await handleSubmit(formData)
-			}}
-		>
-			<label>Email</label>
-			<input name='email' type='email' required />
-			<label>Password</label>
-			<input name='password' type='password' required />
-			<button type='submit'>Sign In</button>
-			{error && <p style={{ color: 'red' }}>{error}</p>}
-		</form>
+		<section className='flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900'>
+			<div className='max-w-md w-full bg-white dark:bg-gray-800 p-8 border-2 border-blue-400 shadow-md rounded-lg'>
+				<h1 className='text-3xl text-center font-semibold mb-6 text-gray-900 dark:text-gray-300'>
+					Вход
+				</h1>
+				<LoginForm />
+			</div>
+		</section>
 	)
 }
