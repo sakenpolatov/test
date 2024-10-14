@@ -1,7 +1,6 @@
 'use client'
 
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,29 +13,32 @@ import {
 	FormMessage
 } from '@/components/ui/form'
 import { toast } from 'sonner'
-import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { registerSchema } from '@/lib/schemas'
+import Link from 'next/link'
 
 export default function RegisterForm() {
-	const router = useRouter()
-
 	const form = useForm({
-		resolver: zodResolver(registerSchema)
+		resolver: zodResolver(registerSchema),
+		defaultValues: {
+			name: '',
+			email: '',
+			password: '',
+			confirmPassword: ''
+		}
 	})
 
 	const onSubmit = async (values: any) => {
+		if (Object.keys(form.formState.errors).length > 0) {
+			toast.error('Заполните все поля ввода')
+			return
+		}
+
 		const res = await fetch('/api/auth/register', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({
-				name: values.name,
-				email: values.email,
-				password: values.password
-			})
+			body: JSON.stringify(values)
 		})
 
 		const data = await res.json()
@@ -45,18 +47,6 @@ export default function RegisterForm() {
 			toast.error(data.message)
 		} else {
 			toast.success('Вы успешно зарегистрировались')
-
-			const signInResult = await signIn('credentials', {
-				redirect: false,
-				email: values.email,
-				password: values.password
-			})
-
-			if (!signInResult?.error) {
-				router.push('/')
-			} else {
-				toast.error('Ошибка входа после регистрации')
-			}
 		}
 	}
 
@@ -70,11 +60,7 @@ export default function RegisterForm() {
 						<FormItem>
 							<FormLabel>Имя пользователя</FormLabel>
 							<FormControl>
-								<Input
-									{...field}
-									placeholder='John'
-									className='focus-visible:ring-2 bg-slate-800 focus:bg-slate-500'
-								/>
+								<Input {...field} placeholder='John' />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -87,12 +73,7 @@ export default function RegisterForm() {
 						<FormItem>
 							<FormLabel>Email</FormLabel>
 							<FormControl>
-								<Input
-									type='email'
-									{...field}
-									placeholder='Neo@gmail.com'
-									className='focus-visible:ring-2 bg-slate-800 focus:bg-slate-500'
-								/>
+								<Input type='email' {...field} placeholder='example@mail.com' />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -105,12 +86,7 @@ export default function RegisterForm() {
 						<FormItem>
 							<FormLabel>Пароль</FormLabel>
 							<FormControl>
-								<Input
-									type='password'
-									{...field}
-									placeholder='••••••••'
-									className='focus-visible:ring-2 bg-slate-800 focus:bg-slate-500'
-								/>
+								<Input type='password' {...field} placeholder='••••••••' />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -123,12 +99,7 @@ export default function RegisterForm() {
 						<FormItem>
 							<FormLabel>Подтверждение пароля</FormLabel>
 							<FormControl>
-								<Input
-									className='focus-visible:ring-2 bg-slate-800 focus:bg-slate-500'
-									type='password'
-									{...field}
-									placeholder='••••••••'
-								/>
+								<Input type='password' {...field} placeholder='••••••••' />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -141,12 +112,12 @@ export default function RegisterForm() {
 				>
 					Зарегистрироваться
 				</Button>
-
 				<p className='text-center'>
-					Уже зарегистрированы?{' '}
+					У Вас уже есть аккаунт?{' '}
 					<Link href='/signin' className='text-blue-500 hover:underline'>
 						Войти
-					</Link>
+					</Link>{' '}
+					в аккаунт
 				</p>
 			</form>
 		</Form>

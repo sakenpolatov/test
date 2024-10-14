@@ -1,8 +1,8 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
-import { Button } from '@/components/ui/button'
 import Image from 'next/image'
+import { Button } from '@/components/ui/button'
 
 const GoogleButton = () => {
 	const handleGoogleSignIn = async () => {
@@ -12,16 +12,18 @@ const GoogleButton = () => {
 	return (
 		<Button
 			onClick={handleGoogleSignIn}
-			className='w-full bg-white text-black py-2 px-4 rounded-md hover:bg-gray-100 border dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 flex items-center justify-center'
+			variant='outline'
+			size='lg'
+			className='flex items-center justify-between gap-2'
 		>
 			<Image
 				src='/google-logo.svg'
 				alt='Google logo'
 				width={24}
 				height={24}
-				className='mr-3'
+				className='mr-2'
 			/>
-			<span className='ml-2'>Google</span>
+			<p className='text-black dark:text-white'>Google</p>
 		</Button>
 	)
 }

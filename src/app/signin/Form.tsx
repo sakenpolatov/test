@@ -98,7 +98,7 @@ export default function LoginForm() {
 					Или войти с помощью
 				</p>
 
-				<div className='flex flex-col space-y-3 items-center'>
+				<div className='flex justify-center gap-10 items-center'>
 					<GoogleButton />
 					<TelegramWidget />
 				</div>

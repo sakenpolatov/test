@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-
 import User from '@@/models/user'
 import dbConnect from '@@/lib/mongodb'
 
@@ -9,7 +8,6 @@ export async function POST(req: Request) {
 		const body = await req.json()
 		const { name, email, password } = body
 
-		// Проверка обязательных полей
 		if (!name || !email || !password) {
 			return NextResponse.json(
 				{ message: 'Заполните все обязательные поля' },
@@ -17,7 +15,6 @@ export async function POST(req: Request) {
 			)
 		}
 
-		// Проверка, существует ли уже пользователь с таким email
 		const existingUser = await User.findOne({ email })
 		if (existingUser) {
 			return NextResponse.json(
@@ -26,8 +23,12 @@ export async function POST(req: Request) {
 			)
 		}
 
-		// Создание нового пользователя
-		const newUser = await User.create({ name, email, password })
+		const newUser = await User.create({
+			name,
+			email,
+			password,
+			provider: 'credentials'
+		})
 
 		return NextResponse.json(
 			{ message: 'Пользователь успешно зарегистрирован', newUser },

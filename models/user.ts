@@ -4,6 +4,7 @@ export interface IUser extends Document {
 	name: string
 	email: string
 	password: string
+	provider: string
 }
 
 const UserSchema: Schema = new mongoose.Schema({
@@ -19,6 +20,10 @@ const UserSchema: Schema = new mongoose.Schema({
 	password: {
 		type: String,
 		required: true
+	},
+	provider: {
+		type: String,
+		default: 'credentials'
 	}
 })
 
