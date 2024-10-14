@@ -41,7 +41,7 @@ export default function Register() {
 			})
 
 			if (!signInResult?.error) {
-				router.push('/dashboard')
+				router.push('/')
 			}
 		}
 	}
