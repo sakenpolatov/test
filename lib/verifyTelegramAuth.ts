@@ -1,15 +1,15 @@
 import crypto from 'crypto'
 
-export function verifyTelegramAuth(queryParams: any) {
+export function verifyTelegramAuth(data: any) {
 	const secret = crypto
 		.createHash('sha256')
 		.update(process.env.BOT_API_TOKEN || '')
 		.digest()
 
-	const checkString = Object.keys(queryParams)
+	const checkString = Object.keys(data)
 		.filter(key => key !== 'hash')
 		.sort()
-		.map(key => `${key}=${queryParams[key]}`)
+		.map(key => `${key}=${data[key]}`)
 		.join('\n')
 
 	const hash = crypto
@@ -17,5 +17,5 @@ export function verifyTelegramAuth(queryParams: any) {
 		.update(checkString)
 		.digest('hex')
 
-	return hash === queryParams.hash
+	return hash === data.hash
 }
