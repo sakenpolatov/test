@@ -1,11 +1,12 @@
-import mongoose, { Schema, Document, Model } from 'mongoose'
+import mongoose, { Schema, Document, Model, Types } from 'mongoose'
 
 export interface IUser extends Document {
+	_id: Types.ObjectId // Поле ObjectId для MongoDB
 	name: string
 	email?: string
 	password?: string
 	provider: string
-	telegramId?: string // Добавлено для Telegram ID
+	telegramId?: string
 }
 
 const UserSchema: Schema = new mongoose.Schema({
@@ -16,7 +17,7 @@ const UserSchema: Schema = new mongoose.Schema({
 	email: {
 		type: String,
 		unique: true,
-		sparse: true // Позволяет null для пользователей без email
+		sparse: true
 	},
 	password: {
 		type: String
@@ -24,7 +25,7 @@ const UserSchema: Schema = new mongoose.Schema({
 	telegramId: {
 		type: String,
 		unique: true,
-		sparse: true // Позволяет null для пользователей без Telegram ID
+		sparse: true
 	},
 	provider: {
 		type: String,

@@ -1,8 +1,9 @@
-import User from '@@/models/user'
+import UserModel from '@@/models/user' // Переименовали модель, чтобы избежать конфликтов
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
 import { JWT } from 'next-auth/jwt'
+import { Account, Profile, User } from 'next-auth' // Используем User и другие типы NextAuth
 import dbConnect from '@@/lib/mongodb'
 
 export const authOptions = {
@@ -18,12 +19,13 @@ export const authOptions = {
 			authorize: async credentials => {
 				await dbConnect()
 
-				const user = await User.findOne({ email: credentials?.email })
+				const user = await UserModel.findOne({ email: credentials?.email })
 
 				if (user) {
+					// Прямая проверка без хэширования, вы уже упоминали, что хэширование отключено
 					const isValidPassword = user.password === credentials?.password
 					if (isValidPassword) {
-						return user
+						return user // Возвращаем пользователя, если пароль верен
 					}
 				}
 				return null
@@ -39,39 +41,47 @@ export const authOptions = {
 			token,
 			account,
 			profile,
-			user
+			user,
+			trigger,
+			isNewUser
 		}: {
 			token: JWT
-			account?: any
-			profile?: any
-			user?: any
+			account?: Account | null
+			profile?: Profile | null
+			user?: User | null
+			trigger?: 'signIn' | 'signUp' | 'update'
+			isNewUser?: boolean
 		}) {
 			console.log('JWT Callback: ', token, user)
 
 			await dbConnect()
 
+			// Обработка пользователей Google
 			if (account?.provider === 'google' && profile) {
-				const existingUser = await User.findOne({ email: profile.email })
+				const existingUser = await UserModel.findOne({ email: profile.email })
 
 				if (!existingUser && profile.email) {
-					const newUser = await User.create({
+					const newUser = await UserModel.create({
 						name: profile.name,
 						email: profile.email,
 						provider: 'google'
 					})
 
-					token.id = newUser._id
+					token.id = newUser._id.toString() // Преобразуем ObjectId в строку
 					token.email = newUser.email
 					token.name = newUser.name
 				} else if (existingUser) {
-					token.id = existingUser._id
+					token.id = existingUser._id.toString() // Преобразуем ObjectId в строку
 					token.email = existingUser.email
 					token.name = existingUser.name
 				}
 			}
 
 			if (user) {
-				token.id = user._id
+				const userId = user.id
+				if (userId) {
+					token.id = userId.toString()
+				}
 				token.email = user.email
 				token.name = user.name
 			}
@@ -81,16 +91,19 @@ export const authOptions = {
 
 		async session({ session, token }: { session: any; token: JWT }) {
 			console.log('Session Callback: ', session, token)
-			session.user.id = token.id
+
+			session.user.id = token.id // Добавляем id пользователя в сессию
 			session.user.email = token.email
 			session.user.name = token.name
-			return session
+
+			return session // Возвращаем измененную сессию
 		}
 	},
 	jwt: {
-		secret: process.env.AUTH_SECRET,
-		maxAge: 30 * 24 * 60 * 60
+		secret: process.env.AUTH_SECRET, // Убедитесь, что secret присутствует
+		maxAge: 30 * 24 * 60 * 60 // JWT срок действия - 30 дней
 	}
 }
 
+// Экспортируем функции
 export const { handlers, auth, signIn, signOut } = NextAuth(authOptions)
