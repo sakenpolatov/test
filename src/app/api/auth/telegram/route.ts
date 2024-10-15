@@ -31,10 +31,12 @@ export async function GET(req: NextRequest) {
 
 		if (!user) {
 			console.log('Пользователь не найден, создаю нового пользователя.')
+			const generatedEmail = `${queryParams.id}@telegram.fake`
 			user = new User({
 				name: queryParams.first_name,
 				telegramId: queryParams.id,
-				provider: 'telegram'
+				provider: 'telegram',
+				email: generatedEmail
 			})
 			await user.save()
 			console.log('Пользователь создан: ', user)
