@@ -6,7 +6,7 @@ export default async function App() {
 	const session = await auth()
 
 	if (!session || !session.user) {
-		redirect('https://nextauth-mauve.vercel.app/signin')
+		redirect('/signin')
 	}
 
 	return (
