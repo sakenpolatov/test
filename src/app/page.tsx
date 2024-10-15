@@ -15,6 +15,7 @@ export default async function App() {
 				<h1 className='text-3xl font-bold mb-6'>Dashboard</h1>
 				<p className='text-lg'>Signed in as {session.user?.email}</p>
 				<p className='text-lg'>Name: {session.user?.name}</p>
+				<p className='text-lg'>Provider: {session.user?.provider}</p>
 				<LogoutButton />
 			</div>
 		</main>
