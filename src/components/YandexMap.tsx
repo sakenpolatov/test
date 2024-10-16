@@ -11,13 +11,16 @@ const YandexMap = () => {
 			if (window.myMap) return
 
 			try {
+				console.log('Загрузка модулей Yandex.Maps...')
 				const [Map, Placemark, Clusterer, Heatmap] = await loadYandexModules()
 
+				console.log('Модули загружены, инициализация карты...')
 				window.myMap = new Map('map', {
 					center: [55.751574, 37.573856],
 					zoom: 9
 				})
 
+				console.log('Карта создана, добавляем метку...')
 				const placemark = new Placemark(
 					[55.751574, 37.573856],
 					{ balloonContent: 'Метка на карте' },
@@ -25,6 +28,7 @@ const YandexMap = () => {
 				)
 
 				window.myMap.geoObjects.add(placemark)
+				console.log('Метка добавлена!')
 			} catch (error) {
 				console.error('Ошибка загрузки модулей Yandex.Maps:', error)
 			}
@@ -45,7 +49,10 @@ const YandexMap = () => {
 				src='https://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js'
 				onLoad={() => console.log('Yandex Heatmap script loaded')}
 			/>
-			<div id='map' style={{ width: '100%', height: '500px' }}></div>
+			<div
+				id='map'
+				style={{ width: '100%', height: '500px', border: '1px solid red' }}
+			></div>
 		</>
 	)
 }
