@@ -33,3 +33,10 @@ export const loginSchema = z.object({
 		.string()
 		.min(6, { message: 'Пароль должен быть не менее 6 символов' })
 })
+
+export const markFormSchema = z.object({
+	type: z.string().min(1, 'Укажите тип'),
+	location: z.string().min(1, 'Укажите локацию'),
+	source: z.string().min(1, 'Укажите источник'),
+	comment: z.string().optional()
+})

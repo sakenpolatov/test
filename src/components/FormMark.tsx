@@ -12,19 +12,11 @@ import {
 	FormMessage
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-
-// Схема для валидации
-const formSchema = z.object({
-	type: z.string().min(1, 'Укажите тип'),
-	location: z.string().min(1, 'Укажите локацию'),
-	source: z.string().min(1, 'Укажите источник'),
-	comment: z.string().optional()
-})
+import { markFormSchema } from '@/lib/schemas'
 
 const FormMark = () => {
 	const form = useForm({
-		resolver: zodResolver(formSchema),
+		resolver: zodResolver(markFormSchema),
 		defaultValues: {
 			type: '',
 			location: '',
@@ -105,7 +97,7 @@ const FormMark = () => {
 
 				<Button
 					type='submit'
-					className='w-full bg-black text-white py-2 px-4 hover:text-black'
+					className='w-full bg-gray-600 text-white py-2 px-4 hover:text-black'
 				>
 					Создать
 				</Button>
