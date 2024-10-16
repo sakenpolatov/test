@@ -3,6 +3,8 @@ import User from '@@/models/user'
 import { verifyTelegramAuth } from '@@/lib/verifyTelegramAuth'
 import dbConnect from '@@/lib/mongodb'
 
+export const dynamic = 'force-dynamic' // Добавляем эту строку
+
 export async function GET(req: NextRequest) {
 	try {
 		const url = new URL(req.url)
