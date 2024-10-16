@@ -1,16 +1,14 @@
 'use client'
-
+import React, { memo } from 'react'
 import { useSession } from 'next-auth/react'
 import LogoutButton from '@@/components/LogoutButton'
 import { FaUserTie } from 'react-icons/fa'
-
 import Link from 'next/link'
 
-export default function NavBar() {
+const NavBar = memo(() => {
 	const { data: session, status } = useSession()
 
 	if (status === 'loading') return null
-
 	if (!session || !session.user) return null
 
 	return (
@@ -41,4 +39,6 @@ export default function NavBar() {
 			</div>
 		</nav>
 	)
-}
+})
+
+export default NavBar
