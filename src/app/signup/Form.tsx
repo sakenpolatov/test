@@ -17,6 +17,7 @@ import { registerSchema } from '@/lib/schemas'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { reloadSession } from '@@/lib/reloadSession'
 
 export default function RegisterForm() {
 	const form = useForm({
@@ -58,8 +59,8 @@ export default function RegisterForm() {
 				password: values.password
 			})
 
-			// Если вход успешен, перенаправить пользователя на главную страницу
 			if (signInResponse?.ok) {
+				reloadSession()
 				router.push('/')
 			} else {
 				toast.error('Ошибка при входе после регистрации')

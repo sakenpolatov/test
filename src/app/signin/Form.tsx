@@ -16,6 +16,7 @@ import { toast } from 'sonner'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { loginSchema } from '@/lib/schemas'
+import { reloadSession } from '@@/lib/reloadSession'
 import GoogleButton from '@@/components/GoogleButton'
 import TelegramWidget from '@@/components/TelegramWidget'
 
@@ -28,7 +29,7 @@ export default function LoginForm() {
 
 	const onSubmit = async (values: any) => {
 		const response = await signIn('credentials', {
-			redirect: false, // Убедимся, что перенаправление контролируется вручную
+			redirect: false,
 			email: values.email,
 			password: values.password
 		})
@@ -39,9 +40,9 @@ export default function LoginForm() {
 			return
 		}
 
-		// Если авторизация успешна, выводим сообщение и выполняем перенаправление
 		toast.success('Вы вошли в систему')
-		router.push('/') // Перенаправляем на главную страницу
+		router.push('/')
+		reloadSession()
 	}
 
 	return (
