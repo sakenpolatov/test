@@ -1,9 +1,13 @@
+'use client'
+
+import { useSession } from 'next-auth/react'
 import LogoutButton from '@@/components/LogoutButton'
-import { auth } from '@@/lib/auth'
 import { FaUserTie } from 'react-icons/fa'
 
-export default async function NavBar() {
-	const session = await auth()
+export default function NavBar() {
+	const { data: session, status } = useSession()
+
+	if (status === 'loading') return null
 
 	if (!session || !session.user) return null
 
@@ -11,36 +15,25 @@ export default async function NavBar() {
 		<nav className='bg-gray-800 p-4 flex justify-between items-center h-16'>
 			<ul className='flex space-x-6'>
 				<li>
-					<a
-						href='/'
-						className='text-white text-lg hover:text-gray-300 transition-colors duration-200'
-					>
+					<a href='/' className='text-white hover:text-gray-300'>
 						Home
 					</a>
 				</li>
 				<li>
-					<a
-						href='/map'
-						className='text-white text-lg hover:text-gray-300 transition-colors duration-200'
-					>
+					<a href='/map' className='text-white hover:text-gray-300'>
 						Map
 					</a>
 				</li>
 				<li>
-					<a
-						href='/info'
-						className='text-white text-lg hover:text-gray-300 transition-colors duration-200'
-					>
+					<a href='/info' className='text-white hover:text-gray-300'>
 						Info
 					</a>
 				</li>
 			</ul>
 			<div className='flex items-center space-x-4'>
 				<div className='flex items-center space-x-2'>
-					<FaUserTie size={24} className='text-white' />{' '}
-					<span className='text-white text-lg'>
-						{session.user.name || 'Guest'}
-					</span>{' '}
+					<FaUserTie size={24} />
+					<span className='text-white'>{session.user.name || 'Guest'}</span>
 				</div>
 				<LogoutButton />
 			</div>
