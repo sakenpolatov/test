@@ -4,6 +4,8 @@ import { useSession } from 'next-auth/react'
 import LogoutButton from '@@/components/LogoutButton'
 import { FaUserTie } from 'react-icons/fa'
 
+import Link from 'next/link'
+
 export default function NavBar() {
 	const { data: session, status } = useSession()
 
@@ -15,19 +17,19 @@ export default function NavBar() {
 		<nav className='bg-gray-800 p-4 flex justify-between items-center h-16'>
 			<ul className='flex space-x-6'>
 				<li>
-					<a href='/' className='text-white hover:text-gray-300'>
+					<Link href='/' className='text-white hover:text-gray-300'>
 						Home
-					</a>
+					</Link>
 				</li>
 				<li>
-					<a href='/map' className='text-white hover:text-gray-300'>
+					<Link href='/map' className='text-white hover:text-gray-300'>
 						Map
-					</a>
+					</Link>
 				</li>
 				<li>
-					<a href='/info' className='text-white hover:text-gray-300'>
+					<Link href='/info' className='text-white hover:text-gray-300'>
 						Info
-					</a>
+					</Link>
 				</li>
 			</ul>
 			<div className='flex items-center space-x-4'>
