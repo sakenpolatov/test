@@ -12,7 +12,7 @@ const TelegramWidget = () => {
 		script.setAttribute('data-userpic', 'false')
 		script.setAttribute(
 			'data-auth-url',
-			`https://nextauth-mauve.vercel.app/api/auth/telegram`
+			`${process.env.NEXTAUTH_URL}/api/auth/telegram`
 		)
 		script.setAttribute('data-request-access', 'write')
 		document.getElementById('telegram-login-btn')?.appendChild(script)
