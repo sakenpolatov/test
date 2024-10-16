@@ -1,3 +1,5 @@
+'use client'
+
 import { reloadSession } from '@@/lib/reloadSession'
 import { signOut } from 'next-auth/react'
 import { IoIosLogOut } from 'react-icons/io'
