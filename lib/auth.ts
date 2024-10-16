@@ -1,9 +1,9 @@
-import UserModel from '@@/models/user' // Переименовали модель, чтобы избежать конфликтов
+import UserModel from '@@/models/user'
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
 import { JWT } from 'next-auth/jwt'
-import { Account, Profile, User } from 'next-auth' // Используем User и другие типы NextAuth
+import { Account, Profile, User } from 'next-auth'
 import dbConnect from '@@/lib/mongodb'
 
 export const authOptions = {
@@ -22,10 +22,9 @@ export const authOptions = {
 				const user = await UserModel.findOne({ email: credentials?.email })
 
 				if (user) {
-					// Прямая проверка без хэширования, вы уже упоминали, что хэширование отключено
 					const isValidPassword = user.password === credentials?.password
 					if (isValidPassword) {
-						return user // Возвращаем пользователя, если пароль верен
+						return user
 					}
 				}
 				return null
