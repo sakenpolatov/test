@@ -1,54 +1,42 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import User from '@@/models/user'
-import { verifyTelegramAuth } from '@@/lib/verifyTelegramAuth'
 import dbConnect from '@@/lib/mongodb'
 
-export async function GET(req: NextRequest) {
+export async function POST(req: Request) {
 	try {
-		const url = new URL(req.url)
-		const queryParams = Object.fromEntries(url.searchParams.entries())
+		await dbConnect()
+		const body = await req.json()
+		const { name, email, password } = body
 
-		console.log('Запрос с параметрами: ', queryParams)
-
-		// Верификация данных от Telegram
-		const isValid = verifyTelegramAuth(queryParams)
-		console.log('Результат верификации: ', isValid)
-
-		if (!isValid) {
-			console.log('Ошибка: не прошел верификацию.')
+		if (!name || !email || !password) {
 			return NextResponse.json(
-				{ message: 'Ошибка при проверке данных от Telegram' },
+				{ message: 'Заполните все обязательные поля' },
 				{ status: 400 }
 			)
 		}
 
-		console.log('Подключение к MongoDB...')
-		await dbConnect()
-		console.log('Подключение к MongoDB выполнено')
-
-		let user = await User.findOne({ telegramId: queryParams.id })
-		console.log('Результат поиска пользователя: ', user)
-
-		if (!user) {
-			console.log('Пользователь не найден, создаю нового пользователя.')
-			user = new User({
-				name: queryParams.first_name,
-				telegramId: queryParams.id,
-				provider: 'telegram'
-			})
-			await user.save()
-			console.log('Пользователь создан: ', user)
+		const existingUser = await User.findOne({ email })
+		if (existingUser) {
+			return NextResponse.json(
+				{ message: 'Этот email уже зарегистрирован' },
+				{ status: 400 }
+			)
 		}
 
-		console.log('Возвращаю успешный ответ')
-		return NextResponse.json({
-			message: 'Авторизация через Telegram успешна',
-			user
+		const newUser = await User.create({
+			name,
+			email,
+			password,
+			provider: 'credentials'
 		})
-	} catch (error) {
-		console.error('Ошибка при обработке запроса: ', error)
 		return NextResponse.json(
-			{ message: 'Произошла ошибка при аутентификации через Telegram', error },
+			{ message: 'Пользователь успешно зарегистрирован', newUser },
+			{ status: 201 }
+		)
+	} catch (error) {
+		console.error(error)
+		return NextResponse.json(
+			{ message: 'Ошибка при регистрации', error },
 			{ status: 500 }
 		)
 	}
