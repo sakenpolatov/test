@@ -5,7 +5,7 @@ import { FaUserTie } from 'react-icons/fa'
 import LogoutButton from '@@/components/LogoutButton'
 
 const NavBar = () => {
-	const { data: session, status } = useSession()
+	const { data: session } = useSession()
 
 	return (
 		<nav className='bg-gray-800 p-4 flex justify-between items-center h-16 px-24'>
