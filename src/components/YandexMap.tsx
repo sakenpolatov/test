@@ -6,7 +6,7 @@ const YandexMap = () => {
 	useEffect(() => {
 		const yandexMapScript = document.createElement('script')
 		yandexMapScript.src =
-			'https://api-maps.yandex.ru/2.1/?apikey=ВАШ_API_КЛЮЧ&lang=ru_RU'
+			'https://api-maps.yandex.ru/2.1/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&lang=ru_RU'
 		yandexMapScript.async = true
 
 		const heatmapScript = document.createElement('script')
