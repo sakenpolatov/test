@@ -10,7 +10,7 @@ const MapPage = () => {
 					<FormMark />
 				</div>
 
-				<div className='w-1/2 bg-gray-200 flex items-center justify-center'>
+				<div className='w-1/2  flex items-center justify-center'>
 					<YandexMap />
 				</div>
 			</div>

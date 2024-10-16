@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useEffect } from 'react'
-import Script from 'next/script'
+import { useEffect } from 'react'
+
 import { loadYandexModules } from '@/lib/ymapsLoader'
+import ScriptLoader from '@/lib/scriptLoader'
 
 const YandexMap = () => {
 	useEffect(() => {
@@ -36,12 +37,15 @@ const YandexMap = () => {
 
 	return (
 		<>
-			<Script
-				src={`https://api-maps.yandex.ru/2.1/?apikey=ВАШ_API_КЛЮЧ&lang=ru_RU`}
-				type='text/javascript'
+			<ScriptLoader
+				src='https://api-maps.yandex.ru/2.1/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&lang=ru_RU'
 				onLoad={() => console.log('Yandex Maps API script loaded')}
 			/>
-			<div id='map' style={{ width: '100%', height: '500px' }}></div>
+			<ScriptLoader
+				src='https://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js'
+				onLoad={() => console.log('Yandex Heatmap script loaded')}
+			/>
+			<div id='map'></div>
 		</>
 	)
 }
