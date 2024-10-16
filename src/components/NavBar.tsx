@@ -8,7 +8,7 @@ const NavBar = () => {
 	const { data: session, status } = useSession()
 
 	return (
-		<nav className='bg-gray-800 p-4 flex justify-between items-center h-16'>
+		<nav className='bg-gray-800 p-4 flex justify-between items-center h-16 px-24'>
 			<ul className='flex space-x-6'>
 				<li>
 					<Link href='/' className='text-white hover:text-gray-300'>
