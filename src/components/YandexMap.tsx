@@ -1,60 +1,60 @@
 'use client'
 
-import { useEffect } from 'react'
-
-import { loadYandexModules } from '@/lib/ymapsLoader'
-import ScriptLoader from '@/lib/scriptLoader'
+import React, { useEffect } from 'react'
 
 const YandexMap = () => {
 	useEffect(() => {
-		const loadMap = async () => {
-			if (window.myMap) return
+		const yandexMapScript = document.createElement('script')
+		yandexMapScript.src =
+			'https://api-maps.yandex.ru/2.1/?apikey=ВАШ_API_КЛЮЧ&lang=ru_RU'
+		yandexMapScript.async = true
 
-			try {
-				console.log('Загрузка модулей Yandex.Maps...')
-				const [Map, Placemark, Clusterer, Heatmap] = await loadYandexModules()
+		const heatmapScript = document.createElement('script')
+		heatmapScript.src =
+			'https://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js'
+		heatmapScript.async = true
 
-				console.log('Модули загружены, инициализация карты...')
-				window.myMap = new Map('map', {
-					center: [55.751574, 37.573856],
-					zoom: 9
+		document.body.appendChild(yandexMapScript)
+		document.body.appendChild(heatmapScript)
+
+		const initializeMap = () => {
+			if (window.ymaps) {
+				window.ymaps.ready(() => {
+					const myMap = new window.ymaps.Map('map', {
+						center: [55.751574, 37.573856],
+						zoom: 9
+					})
+
+					const placemark = new window.ymaps.Placemark(
+						[55.751574, 37.573856],
+						{ balloonContent: 'Метка на карте' },
+						{ preset: 'islands#icon', iconColor: '#0095b6' }
+					)
+
+					myMap.geoObjects.add(placemark)
+					console.log('Карта успешно загружена')
 				})
-
-				console.log('Карта создана, добавляем метку...')
-				const placemark = new Placemark(
-					[55.751574, 37.573856],
-					{ balloonContent: 'Метка на карте' },
-					{ preset: 'islands#icon', iconColor: '#0095b6' }
-				)
-
-				window.myMap.geoObjects.add(placemark)
-				console.log('Метка добавлена!')
-			} catch (error) {
-				console.error('Ошибка загрузки модулей Yandex.Maps:', error)
+			} else {
+				console.error('Yandex Maps API не загружен.')
 			}
 		}
 
-		if (typeof window !== 'undefined' && window.ymaps) {
-			window.ymaps.ready(loadMap)
+		yandexMapScript.onload = () => {
+			console.log('Yandex Maps API script loaded')
+			initializeMap()
+		}
+
+		heatmapScript.onload = () => {
+			console.log('Yandex Heatmap script loaded')
+		}
+
+		return () => {
+			document.body.removeChild(yandexMapScript)
+			document.body.removeChild(heatmapScript)
 		}
 	}, [])
 
-	return (
-		<>
-			<ScriptLoader
-				src='https://api-maps.yandex.ru/2.1/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&lang=ru_RU'
-				onLoad={() => console.log('Yandex Maps API script loaded')}
-			/>
-			<ScriptLoader
-				src='https://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js'
-				onLoad={() => console.log('Yandex Heatmap script loaded')}
-			/>
-			<div
-				id='map'
-				style={{ width: '100%', height: '500px', border: '1px solid red' }}
-			></div>
-		</>
-	)
+	return <div id='map' style={{ width: '100%', height: '500px' }}></div>
 }
 
 export default YandexMap
