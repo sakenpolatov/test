@@ -12,7 +12,7 @@ const TelegramWidget = () => {
 		script.setAttribute('data-userpic', 'false')
 		script.setAttribute(
 			'data-auth-url',
-			`${process.env.NEXTAUTH_URL}/api/auth/telegram`
+			`https://test-delta-khaki-46.vercel.app/api/auth/telegram`
 		)
 		script.setAttribute('data-request-access', 'write')
 		document.getElementById('telegram-login-btn')?.appendChild(script)
