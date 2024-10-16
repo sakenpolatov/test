@@ -1,6 +1,5 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
 import { signOut } from 'next-auth/react'
 import { IoIosLogOut } from 'react-icons/io'
 
@@ -10,10 +9,12 @@ const LogoutButton = () => {
 	}
 
 	return (
-		<Button variant='destructive' onClick={handleSignOut}>
-			<IoIosLogOut />
-		</Button>
-	)
+		<IoIosLogOut
+			size={24}
+			className='text-white cursor-pointer'
+			onClick={handleSignOut}
+		/>
+	) 
 }
 
 export default LogoutButton

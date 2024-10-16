@@ -13,7 +13,7 @@ export default async function NavBar() {
 				<li>
 					<a
 						href='/'
-						className='text-white hover:text-gray-300 transition-colors duration-200'
+						className='text-white text-lg hover:text-gray-300 transition-colors duration-200'
 					>
 						Home
 					</a>
@@ -21,7 +21,7 @@ export default async function NavBar() {
 				<li>
 					<a
 						href='/map'
-						className='text-white hover:text-gray-300 transition-colors duration-200'
+						className='text-white text-lg hover:text-gray-300 transition-colors duration-200'
 					>
 						Map
 					</a>
@@ -29,7 +29,7 @@ export default async function NavBar() {
 				<li>
 					<a
 						href='/info'
-						className='text-white hover:text-gray-300 transition-colors duration-200'
+						className='text-white text-lg hover:text-gray-300 transition-colors duration-200'
 					>
 						Info
 					</a>
@@ -37,8 +37,10 @@ export default async function NavBar() {
 			</ul>
 			<div className='flex items-center space-x-4'>
 				<div className='flex items-center space-x-2'>
-					<FaUserTie />
-					<span className='text-white'>{session.user.name || 'Guest'}</span>
+					<FaUserTie size={24} className='text-white' />{' '}
+					<span className='text-white text-lg'>
+						{session.user.name || 'Guest'}
+					</span>{' '}
 				</div>
 				<LogoutButton />
 			</div>
