@@ -4,6 +4,8 @@ import React, { useEffect } from 'react'
 
 const YandexMap = () => {
 	useEffect(() => {
+		if (window.myMap) return
+
 		const yandexMapScript = document.createElement('script')
 		yandexMapScript.src =
 			'https://api-maps.yandex.ru/2.1/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&lang=ru_RU'
@@ -20,19 +22,20 @@ const YandexMap = () => {
 		const initializeMap = () => {
 			if (window.ymaps) {
 				window.ymaps.ready(() => {
-					const myMap = new window.ymaps.Map('map', {
-						center: [55.751574, 37.573856],
-						zoom: 9
-					})
+					if (!window.myMap) {
+						window.myMap = new window.ymaps.Map('map', {
+							center: [55.751574, 37.573856],
+							zoom: 9
+						})
 
-					const placemark = new window.ymaps.Placemark(
-						[55.751574, 37.573856],
-						{ balloonContent: 'Метка на карте' },
-						{ preset: 'islands#icon', iconColor: '#0095b6' }
-					)
+						const placemark = new window.ymaps.Placemark(
+							[55.751574, 37.573856],
+							{ balloonContent: 'Метка на карте' },
+							{ preset: 'islands#icon', iconColor: '#0095b6' }
+						)
 
-					myMap.geoObjects.add(placemark)
-					console.log('Карта успешно загружена')
+						window.myMap.geoObjects.add(placemark)
+					}
 				})
 			} else {
 				console.error('Yandex Maps API не загружен.')
