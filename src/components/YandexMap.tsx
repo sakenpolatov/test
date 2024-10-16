@@ -45,7 +45,7 @@ const YandexMap = () => {
 				src='https://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js'
 				onLoad={() => console.log('Yandex Heatmap script loaded')}
 			/>
-			<div id='map'></div>
+			<div id='map' style={{ width: '100%', height: '500px' }}></div>
 		</>
 	)
 }
