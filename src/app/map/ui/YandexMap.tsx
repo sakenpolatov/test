@@ -57,7 +57,16 @@ const YandexMap = () => {
 		}
 	}, [])
 
-	return <div id='map' style={{ width: '100%', height: '500px' }}></div>
+	return (
+		<div
+			id='map'
+			style={{
+				width: '100%',
+				height: '500px',
+				border: '4px solid #ffffff'
+			}}
+		></div>
+	)
 }
 
 export default YandexMap
