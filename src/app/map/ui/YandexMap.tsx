@@ -4,8 +4,13 @@ import React, { useEffect } from 'react'
 
 const YandexMap = () => {
 	useEffect(() => {
-		if (window.myMap) return
+		// Если карта уже существует, уничтожаем её перед инициализацией
+		if (window.myMap) {
+			window.myMap.destroy()
+			window.myMap = null
+		}
 
+		// Создаем скрипты для загрузки Яндекс Карт и тепловой карты
 		const yandexMapScript = document.createElement('script')
 		yandexMapScript.src =
 			'https://api-maps.yandex.ru/2.1/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&lang=ru_RU'
@@ -16,9 +21,11 @@ const YandexMap = () => {
 			'https://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js'
 		heatmapScript.async = true
 
+		// Добавляем скрипты на страницу
 		document.body.appendChild(yandexMapScript)
 		document.body.appendChild(heatmapScript)
 
+		// Инициализация карты
 		const initializeMap = () => {
 			if (window.ymaps) {
 				window.ymaps.ready(() => {
@@ -34,7 +41,9 @@ const YandexMap = () => {
 							{ preset: 'islands#icon', iconColor: '#0095b6' }
 						)
 
-						window.myMap.geoObjects.add(placemark)
+						if (window.myMap) {
+							window.myMap.geoObjects.add(placemark)
+						}
 					}
 				})
 			} else {
@@ -52,6 +61,10 @@ const YandexMap = () => {
 		}
 
 		return () => {
+			if (window.myMap) {
+				window.myMap.destroy()
+				window.myMap = null
+			}
 			document.body.removeChild(yandexMapScript)
 			document.body.removeChild(heatmapScript)
 		}
