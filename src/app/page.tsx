@@ -1,14 +1,6 @@
-import { auth } from '@@/lib/auth'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 
 export default async function App() {
-	const session = await auth()
-
-	if (!session || !session.user) {
-		redirect('/signin')
-	}
-
 	return (
 		<main className='flex h-full items-center justify-center p-24'>
 			<div className='text-center'>
