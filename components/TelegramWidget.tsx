@@ -8,7 +8,7 @@ const TelegramWidget = () => {
 		script.src = 'https://telegram.org/js/telegram-widget.js?22'
 		script.async = true
 		script.setAttribute('data-telegram-login', 'NextTelegramAuth_bot')
-		script.setAttribute('data-size', 'large')
+		script.setAttribute('data-size', 'middle')
 		script.setAttribute('data-userpic', 'false')
 		script.setAttribute(
 			'data-auth-url',
