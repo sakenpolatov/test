@@ -6,7 +6,10 @@ import { SessionProvider } from 'next-auth/react'
 
 export const metadata = {
 	title: 'TelegramWebApp',
-	description: 'auth mongodb telegram'
+	description: 'auth mongodb telegram',
+	icons: {
+		icon: '/favicon.svg'
+	}
 }
 
 export default function RootLayout({
