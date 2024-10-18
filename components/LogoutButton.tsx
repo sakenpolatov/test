@@ -6,7 +6,7 @@ import { IoIosLogOut } from 'react-icons/io'
 
 const LogoutButton = () => {
 	const handleSignOut = async () => {
-		await signOut({ redirect: true, callbackUrl: '/signin' })
+		await signOut({ redirect: true, callbackUrl: '/' })
 		reloadSession()
 	}
 
