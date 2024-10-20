@@ -29,56 +29,71 @@ const FormMark = () => {
 
 	const onSubmit = async (data: any) => {
 		try {
-			// Отправляем данные на сервер
-			const res = await fetch('/api/markers', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(data)
-			})
+			// Получаем координаты через Яндекс Геокодер
+			const geocoderUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&format=json&geocode=${encodeURIComponent(
+				data.location
+			)}`
 
-			if (res.ok) {
-				const result = await res.json()
-				console.log('Метка успешно добавлена:', result)
-				setMarks(prevMarks => [...prevMarks, result.marker])
+			const geocodeRes = await fetch(geocoderUrl)
+			const geocodeData = await geocodeRes.json()
+			const results = geocodeData.response.GeoObjectCollection.featureMember
 
-				// Получаем координаты через Яндекс Геокодер
-				const geocoderUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&format=json&geocode=${encodeURIComponent(
-					data.location
-				)}`
+			if (results && results.length > 0) {
+				// Координаты первой найденной точки
+				const firstResult = results[0]?.GeoObject.Point.pos
+					.split(' ')
+					.map(Number)
+				console.log('Координаты для новой метки:', firstResult)
 
-				const geocodeRes = await fetch(geocoderUrl)
-				const geocodeData = await geocodeRes.json()
-				const results = geocodeData.response.GeoObjectCollection.featureMember
+				// Проверяем, что координаты получены
+				if (firstResult) {
+					// Добавляем координаты в данные метки перед отправкой на сервер
+					const [longitude, latitude] = firstResult
+					const markerData = {
+						...data,
+						coordinates: {
+							longitude,
+							latitude
+						}
+					}
 
-				if (results && results.length > 0) {
-					// Координаты первой найденной точки
-					const firstResult = results[0]?.GeoObject.Point.pos
-						.split(' ')
-						.map(Number)
-					console.log('Координаты для новой метки:', firstResult)
+					// Отправляем данные на сервер
+					const res = await fetch('/api/markers', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify(markerData) // Отправляем данные с координатами
+					})
 
-					if (firstResult && window.myMap) {
+					if (res.ok) {
+						const result = await res.json()
+						console.log('Метка успешно добавлена:', result)
+						setMarks(prevMarks => [...prevMarks, result.marker])
+
 						// Устанавливаем центр карты на координаты новой метки и устанавливаем зум на 18
-						window.myMap.setCenter(firstResult, 18)
+						if (window.myMap) {
+							window.myMap.setCenter(firstResult, 18)
 
-						// Добавляем метку на карту
-						const placemark = new window.ymaps.Placemark(
-							firstResult,
-							{
-								balloonContent: data.comment // Название или описание метки
-							},
-							{ preset: 'islands#icon', iconColor: '#0095b6' }
-						)
-						window.myMap.geoObjects.add(placemark)
+							// Добавляем метку на карту
+							const placemark = new window.ymaps.Placemark(
+								firstResult,
+								{
+									balloonContent: data.comment // Название или описание метки
+								},
+								{ preset: 'islands#icon', iconColor: '#0095b6' }
+							)
+							window.myMap.geoObjects.add(placemark)
+						}
+
+						// Сбрасываем форму после успешного добавления
+						form.reset()
+					} else {
+						console.error('Ошибка при добавлении метки:', res)
 					}
 				}
-
-				// Сбрасываем форму после успешного добавления
-				form.reset()
 			} else {
-				console.error('Ошибка при добавлении метки:', res)
+				console.error('Не найдено местоположение для указанного адреса')
 			}
 		} catch (error) {
 			console.error('Ошибка:', error)
