@@ -29,6 +29,7 @@ const FormMark = () => {
 
 	const onSubmit = async (data: any) => {
 		try {
+			// Отправляем данные на сервер
 			const res = await fetch('/api/markers', {
 				method: 'POST',
 				headers: {
@@ -41,6 +42,39 @@ const FormMark = () => {
 				const result = await res.json()
 				console.log('Метка успешно добавлена:', result)
 				setMarks(prevMarks => [...prevMarks, result.marker])
+
+				// Получаем координаты через Яндекс Геокодер
+				const geocoderUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&format=json&geocode=${encodeURIComponent(
+					data.location
+				)}`
+
+				const geocodeRes = await fetch(geocoderUrl)
+				const geocodeData = await geocodeRes.json()
+				const results = geocodeData.response.GeoObjectCollection.featureMember
+
+				if (results && results.length > 0) {
+					// Координаты первой найденной точки
+					const firstResult = results[0]?.GeoObject.Point.pos
+						.split(' ')
+						.map(Number)
+					console.log('Координаты для новой метки:', firstResult)
+
+					if (firstResult && window.myMap) {
+						// Добавляем метку на карту
+						const placemark = new window.ymaps.Placemark(
+							firstResult,
+							{
+								balloonContent: data.location // Название или описание метки
+							},
+							{
+								preset: 'islands#blueDotIcon' // Настройка иконки метки
+							}
+						)
+						window.myMap.geoObjects.add(placemark)
+					}
+				}
+
+				// Сбрасываем форму после успешного добавления
 				form.reset()
 			} else {
 				console.error('Ошибка при добавлении метки:', res)
