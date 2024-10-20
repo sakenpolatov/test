@@ -55,11 +55,11 @@ const TableMarks = () => {
 								<TableHead className='bg-gray-500 text-gray-700 w-3/12 border border-black text-center'>
 									Комментарии
 								</TableHead>
-								<TableHead className='bg-gray-500 text-gray-700 w-1/12 border border-black text-center'>
-									Действия
-								</TableHead>
 								<TableHead className='bg-gray-500 text-gray-700 w-2/12 border border-black text-center'>
 									Координаты
+								</TableHead>
+								<TableHead className='bg-gray-500 text-gray-700 w-1/12 border border-black text-center'>
+									Удалить
 								</TableHead>
 							</TableRow>
 						</TableHeader>

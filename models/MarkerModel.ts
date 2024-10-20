@@ -7,6 +7,10 @@ export interface IMarker extends Document {
 	address: string
 	label: string
 	description: string
+	coordinates: {
+		latitude: number
+		longitude: number
+	}
 }
 
 const MarkerSchema: Schema = new mongoose.Schema({
@@ -29,6 +33,16 @@ const MarkerSchema: Schema = new mongoose.Schema({
 	},
 	description: {
 		type: String
+	},
+	coordinates: {
+		latitude: {
+			type: Number,
+			required: true
+		},
+		longitude: {
+			type: Number,
+			required: true
+		}
 	}
 })
 
