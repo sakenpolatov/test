@@ -4,7 +4,6 @@ import Marker from '@@/models/MarkerModel'
 import UserModel from '@@/models/UserModel'
 import { auth } from '@@/lib/auth'
 
-// POST: добавление новой метки
 export async function POST(req: Request) {
 	try {
 		await dbConnect()
@@ -18,9 +17,10 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json()
-		const { type, location, source, comment } = body
+		const { type, location, source, comment, coordinates } = body // Добавляем coordinates
 
-		if (!type || !location || !source) {
+		if (!type || !location || !source || !coordinates) {
+			// Проверяем наличие координат
 			return NextResponse.json(
 				{ message: 'Все поля обязательны' },
 				{ status: 400 }
@@ -36,12 +36,17 @@ export async function POST(req: Request) {
 			)
 		}
 
+		// Создаем новую метку с координатами
 		const newMarker = await Marker.create({
 			user: user._id,
 			type,
 			address: location,
 			label: source,
-			description: comment
+			description: comment,
+			coordinates: {
+				latitude: coordinates.latitude,
+				longitude: coordinates.longitude
+			}
 		})
 
 		user.markers.push(newMarker._id)
