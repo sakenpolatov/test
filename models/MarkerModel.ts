@@ -2,9 +2,10 @@ import mongoose, { Schema, Document, Types } from 'mongoose'
 
 export interface IMarker extends Document {
 	user: Types.ObjectId
+	type: string
 	address: string
-	label?: string
-	description?: string
+	label: string
+	description: string
 }
 
 const MarkerSchema: Schema = new mongoose.Schema({
@@ -13,12 +14,17 @@ const MarkerSchema: Schema = new mongoose.Schema({
 		ref: 'User',
 		required: true
 	},
+	type: {
+		type: String,
+		required: true
+	},
 	address: {
 		type: String,
 		required: true
 	},
 	label: {
-		type: String
+		type: String,
+		required: true
 	},
 	description: {
 		type: String

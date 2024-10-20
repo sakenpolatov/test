@@ -25,8 +25,25 @@ const FormMark = () => {
 		}
 	})
 
-	const onSubmit = (data: any) => {
-		console.log('Форма отправлена:', data)
+	const onSubmit = async (data: any) => {
+		try {
+			const res = await fetch('/api/markers', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			})
+
+			if (res.ok) {
+				const result = await res.json()
+				console.log('Метка успешно добавлена:', result)
+			} else {
+				console.error('Ошибка при добавлении метки:', res)
+			}
+		} catch (error) {
+			console.error('Ошибка:', error)
+		}
 	}
 
 	return (

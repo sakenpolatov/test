@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
 	Table,
 	TableHeader,
@@ -19,64 +19,30 @@ import {
 } from '@/components/ui/pagination'
 
 const TableMarks = () => {
-	const data = [
-		{
-			type: '124',
-			location: 'ул Пушкина, д 123, Москва',
-			source: 'Школа №123',
-			comment: 'Близко к центру',
-			dateAdded: '2023-01-01 14:32:10'
-		},
-		{
-			type: '125',
-			location: 'ул Ленина, д 5, Москва',
-			source: 'Кафе "Московское утро"',
-			comment: 'Отличный кофе',
-			dateAdded: '2023-01-01 16:45:23'
-		},
-		{
-			type: '126',
-			location: 'ул Мира, д 8, Москва',
-			source: 'Магазин "Седьмой континент"',
-			comment: 'Большой ассортимент',
-			dateAdded: '2023-01-02 10:15:40'
-		},
-		{
-			type: '127',
-			location: 'ул Красная, д 10, Москва',
-			source: 'Памятник архитектуры',
-			comment: 'Историческое место',
-			dateAdded: '2023-01-03 11:55:12'
-		},
-		{
-			type: '128',
-			location: 'ул Тверская, д 6, Москва',
-			source: 'Торговый центр "Москва"',
-			comment: 'Много магазинов',
-			dateAdded: '2023-01-04 18:25:00'
-		},
-		{
-			type: '129',
-			location: 'ул Арбат, д 10, Москва',
-			source: 'Театр "Арбат"',
-			comment: 'Рекомендуем к посещению',
-			dateAdded: '2023-01-05 09:12:45'
-		}
-	]
-
-	// Определяем состояние для текущей страницы и количества элементов на странице
+	const [marks, setMarks] = useState([])
 	const [currentPage, setCurrentPage] = useState(1)
 	const itemsPerPage = 1
 
-	// Логика для извлечения элементов на текущей странице
+	useEffect(() => {
+		const fetchMarks = async () => {
+			try {
+				const response = await fetch('/api/markers')
+				const data = await response.json()
+				setMarks(data.markers)
+			} catch (error) {
+				console.error('Ошибка при получении меток:', error)
+			}
+		}
+
+		fetchMarks()
+	}, [])
+
 	const indexOfLastItem = currentPage * itemsPerPage
 	const indexOfFirstItem = indexOfLastItem - itemsPerPage
-	const currentItems = data.slice(indexOfFirstItem, indexOfLastItem)
+	const currentItems = marks.slice(indexOfFirstItem, indexOfLastItem)
 
-	// Общее количество страниц
-	const totalPages = Math.ceil(data.length / itemsPerPage)
+	const totalPages = Math.ceil(marks.length / itemsPerPage)
 
-	// Функция для изменения текущей страницы
 	const handlePageChange = (page: number) => {
 		setCurrentPage(page)
 	}
@@ -98,31 +64,33 @@ const TableMarks = () => {
 						<TableHead className='bg-gray-500 text-gray-700 w-3/12 border border-black text-center'>
 							Комментарии
 						</TableHead>
-						<TableHead className='bg-gray-500 text-gray-700 w-2/12 border border-black text-center'>
-							Дата добавления
-						</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{currentItems.map((item, index) => (
-						<TableRow key={index} className='hover:bg-transparent'>
-							<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
-								{item.type}
-							</TableCell>
-							<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
-								{item.location}
-							</TableCell>
-							<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
-								{item.source}
-							</TableCell>
-							<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
-								{item.comment}
-							</TableCell>
-							<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
-								{item.dateAdded}
+					{currentItems.length > 0 ? (
+						currentItems.map((item: any, index) => (
+							<TableRow key={index} className='hover:bg-transparent'>
+								<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
+									{item.type}
+								</TableCell>
+								<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
+									{item.address}
+								</TableCell>
+								<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
+									{item.label}
+								</TableCell>
+								<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
+									{item.description}
+								</TableCell>
+							</TableRow>
+						))
+					) : (
+						<TableRow>
+							<TableCell colSpan={4} className='text-center'>
+								Нет данных
 							</TableCell>
 						</TableRow>
-					))}
+					)}
 				</TableBody>
 			</Table>
 
