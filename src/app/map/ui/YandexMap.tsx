@@ -1,19 +1,17 @@
 'use client'
 
-import { Marker, useMarks } from '@/context/MarksContext'
+import { useMarks } from '@/context/MarksContext'
 import React, { useEffect } from 'react'
 
 const YandexMap = () => {
-	const { marks } = useMarks() // marks должны быть массивом объектов типа Marker
+	const { marks, currentCoordinates } = useMarks()
 
 	useEffect(() => {
-		// Если карта уже существует, уничтожаем её перед инициализацией
 		if (window.myMap) {
 			window.myMap.destroy()
 			window.myMap = null
 		}
 
-		// Создаем скрипты для загрузки Яндекс Карт и тепловой карты
 		const yandexMapScript = document.createElement('script')
 		yandexMapScript.src =
 			'https://api-maps.yandex.ru/2.1/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&lang=ru_RU'
@@ -24,17 +22,15 @@ const YandexMap = () => {
 			'https://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js'
 		heatmapScript.async = true
 
-		// Добавляем скрипты на страницу
 		document.body.appendChild(yandexMapScript)
 		document.body.appendChild(heatmapScript)
 
-		// Инициализация карты
 		const initializeMap = () => {
 			if (window.ymaps) {
 				window.ymaps.ready(() => {
 					if (!window.myMap) {
 						window.myMap = new window.ymaps.Map('map', {
-							center: [55.751574, 37.573856],
+							center: currentCoordinates[0] || [55.751574, 37.573856],
 							zoom: 9,
 							controls: ['zoomControl', 'geolocationControl']
 						})
@@ -46,7 +42,6 @@ const YandexMap = () => {
 		}
 
 		yandexMapScript.onload = () => {
-			console.log('Yandex Maps API script loaded')
 			initializeMap()
 		}
 
@@ -65,21 +60,27 @@ const YandexMap = () => {
 	}, [])
 
 	useEffect(() => {
+		if (window.myMap && currentCoordinates.length) {
+			window.myMap.setCenter(
+				[currentCoordinates[0].latitude, currentCoordinates[0].longitude],
+				9
+			)
+		}
+	}, [currentCoordinates])
+
+	useEffect(() => {
 		const addPlacemarks = () => {
 			if (window.myMap) {
 				window.myMap.geoObjects.removeAll()
 
-				marks.forEach((marker: Marker) => {
+				marks.forEach(marker => {
 					if (marker.coordinates) {
-						// Проверяем, что координаты есть
 						const placemark = new window.ymaps.Placemark(
 							[marker.coordinates.latitude, marker.coordinates.longitude],
 							{ balloonContent: marker.description || '' },
 							{ preset: 'islands#icon', iconColor: '#0095b6' }
 						)
 						window.myMap?.geoObjects.add(placemark)
-					} else {
-						console.error('Координаты не найдены для метки:', marker)
 					}
 				})
 			}

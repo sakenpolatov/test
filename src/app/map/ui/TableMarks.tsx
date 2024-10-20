@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
 	Table,
 	TableHeader,
@@ -20,7 +20,7 @@ import NoMarkers from './NoMarkers'
 import { useMarks } from '@/context/MarksContext'
 
 const TableMarks = () => {
-	const { marks, handleDelete } = useMarks()
+	const { marks, handleDelete, setCurrentCoordinates } = useMarks()
 	const [currentPage, setCurrentPage] = useState(1)
 	const itemsPerPage = 1
 
@@ -33,6 +33,11 @@ const TableMarks = () => {
 	const handlePageChange = (page: number) => {
 		setCurrentPage(page)
 	}
+
+	useEffect(() => {
+		const coordinates = currentItems.map(item => item.coordinates)
+		setCurrentCoordinates(coordinates)
+	}, [currentItems])
 
 	return (
 		<>

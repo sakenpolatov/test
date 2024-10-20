@@ -17,10 +17,17 @@ const MarksContext = createContext<{
 	setMarks: React.Dispatch<React.SetStateAction<Marker[]>>
 	handleDelete: (id: string) => Promise<void>
 	fetchMarks: () => Promise<void>
+	currentCoordinates: { latitude: number; longitude: number }[]
+	setCurrentCoordinates: React.Dispatch<
+		React.SetStateAction<{ latitude: number; longitude: number }[]>
+	>
 } | null>(null)
 
 export const MarksProvider = ({ children }: any) => {
 	const [marks, setMarks] = useState<Marker[]>([])
+	const [currentCoordinates, setCurrentCoordinates] = useState<
+		{ latitude: number; longitude: number }[]
+	>([])
 
 	const fetchMarks = async () => {
 		try {
@@ -61,7 +68,14 @@ export const MarksProvider = ({ children }: any) => {
 
 	return (
 		<MarksContext.Provider
-			value={{ marks, setMarks, handleDelete, fetchMarks }}
+			value={{
+				marks,
+				setMarks,
+				handleDelete,
+				fetchMarks,
+				currentCoordinates,
+				setCurrentCoordinates
+			}}
 		>
 			{children}
 		</MarksContext.Provider>
