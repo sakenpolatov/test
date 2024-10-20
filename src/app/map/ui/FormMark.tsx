@@ -36,7 +36,15 @@ const FormMark = () => {
 		}
 
 		try {
-			// Добавляем координаты в данные, отправляемые на сервер
+			// Логируем перед отправкой
+			console.log('Отправка данных с координатами:', {
+				...data,
+				coordinates: {
+					latitude: coordinates[1],
+					longitude: coordinates[0]
+				}
+			})
+
 			const markerData = {
 				...data,
 				coordinates: {
@@ -45,13 +53,12 @@ const FormMark = () => {
 				}
 			}
 
-			// Отправляем данные на сервер
 			const res = await fetch('/api/markers', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify(markerData) // Отправляем данные с координатами
+				body: JSON.stringify(markerData)
 			})
 
 			if (res.ok) {
@@ -59,21 +66,19 @@ const FormMark = () => {
 				console.log('Метка успешно добавлена:', result)
 				setMarks(prevMarks => [...prevMarks, result.marker])
 
-				// Добавляем метку на карту
+				// Логируем координаты для добавления метки на карте
+				console.log('Добавление метки на карте с координатами:', coordinates)
+
 				if (window.myMap && coordinates) {
 					const placemark = new window.ymaps.Placemark(
 						coordinates,
 						{
-							balloonContent: data.comment // Название или описание метки
+							balloonContent: data.comment
 						},
 						{ preset: 'islands#icon', iconColor: '#0095b6' }
 					)
 					window.myMap.geoObjects.add(placemark)
 				}
-
-				// Сбрасываем форму после успешного добавления
-				form.reset()
-				setCoordinates(null) // Сбрасываем координаты
 			} else {
 				console.error('Ошибка при добавлении метки:', res)
 			}
@@ -94,25 +99,22 @@ const FormMark = () => {
 			const res = await fetch(geocoderUrl)
 			const data = await res.json()
 
-			// Логируем данные для отладки
 			console.log('Geocoding response:', data)
 
 			const results = data.response.GeoObjectCollection.featureMember
 
-			// Если результат отсутствует, логируем ошибку
 			if (!results || results.length === 0) {
 				console.error('Не найдено местоположение для указанного адреса')
 				return
 			}
 
-			// Получаем координаты и преобразуем их
 			const firstResult = results[0]?.GeoObject.Point.pos.split(' ').map(Number)
 			console.log('Координаты первого результата:', firstResult)
 
-			// Сохраняем координаты и центрируем карту
 			if (firstResult && window.myMap) {
 				const [longitude, latitude] = firstResult
-				setCoordinates([longitude, latitude]) // Сохраняем координаты
+				setCoordinates([longitude, latitude])
+				console.log('Координаты успешно обновлены:', [longitude, latitude])
 				window.myMap.setCenter([latitude, longitude], 18)
 			}
 		} catch (error) {
