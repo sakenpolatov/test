@@ -9,6 +9,7 @@ declare global {
 			constructor(container: string | HTMLElement, state: any, options?: any)
 			geoObjects: any
 			destroy(): void
+			setCenter(coords: number[], zoom?: number): void
 		}
 
 		class Placemark {

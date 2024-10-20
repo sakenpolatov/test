@@ -12,6 +12,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { markFormSchema } from '@/lib/schemas'
 import { useMarks } from '@/context/MarksContext'
+import { FaSearchLocation } from 'react-icons/fa'
 
 const FormMark = () => {
 	const { setMarks } = useMarks()
@@ -49,6 +50,30 @@ const FormMark = () => {
 		}
 	}
 
+	const handleSearch = async () => {
+		const location = form.getValues('location')
+		if (!location) return
+
+		const geocoderUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&format=json&geocode=${location}`
+
+		try {
+			const res = await fetch(geocoderUrl)
+			const data = await res.json()
+			const results = data.response.GeoObjectCollection.featureMember
+
+			const firstResult = results[0]?.GeoObject.Point.pos.split(' ').map(Number)
+			if (firstResult && window.myMap) {
+				window.myMap.setCenter(firstResult, 12)
+				const placemark = new window.ymaps.Placemark(firstResult, {
+					balloonContent: location
+				})
+				window.myMap.geoObjects.add(placemark)
+			}
+		} catch (error) {
+			console.error('Ошибка при геокодировании:', error)
+		}
+	}
+
 	return (
 		<Form {...form}>
 			<form
@@ -76,7 +101,20 @@ const FormMark = () => {
 						<FormItem>
 							<FormLabel>Локация</FormLabel>
 							<FormControl>
-								<Input {...field} placeholder='Укажите локацию' />
+								<div className='relative'>
+									<Input
+										{...field}
+										placeholder='Укажите локацию'
+										className='pr-10'
+									/>
+									<button
+										type='button'
+										onClick={handleSearch}
+										className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600'
+									>
+										<FaSearchLocation />
+									</button>
+								</div>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -107,7 +145,7 @@ const FormMark = () => {
 								<textarea
 									{...field}
 									placeholder='Введите комментарий'
-									className='w-full border rounded-md px-3 py-2'
+									className='w-full border rounded-md px-3 py-2 resize-none'
 								/>
 							</FormControl>
 							<FormMessage />

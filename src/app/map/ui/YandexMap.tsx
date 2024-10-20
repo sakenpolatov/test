@@ -32,7 +32,8 @@ const YandexMap = () => {
 					if (!window.myMap) {
 						window.myMap = new window.ymaps.Map('map', {
 							center: [55.751574, 37.573856],
-							zoom: 9
+							zoom: 9,
+							controls: ['zoomControl', 'geolocationControl']
 						})
 
 						const placemark = new window.ymaps.Placemark(
