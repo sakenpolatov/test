@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import User from '@@/models/user'
+import User from '@@/models/UserModel'
 import { verifyTelegramAuth } from '@@/lib/verifyTelegramAuth'
 import dbConnect from '@@/lib/mongodb'
 

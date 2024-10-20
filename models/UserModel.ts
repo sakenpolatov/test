@@ -1,12 +1,13 @@
 import mongoose, { Schema, Document, Model, Types } from 'mongoose'
 
 export interface IUser extends Document {
-	_id: Types.ObjectId // Поле ObjectId для MongoDB
+	_id: Types.ObjectId
 	name: string
 	email?: string
 	password?: string
 	provider: string
 	telegramId?: string
+	markers: Types.ObjectId[]
 }
 
 const UserSchema: Schema = new mongoose.Schema({
@@ -30,7 +31,13 @@ const UserSchema: Schema = new mongoose.Schema({
 	provider: {
 		type: String,
 		default: 'credentials'
-	}
+	},
+	markers: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Marker'
+		}
+	]
 })
 
 const User: Model<IUser> =
