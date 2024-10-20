@@ -45,6 +45,8 @@ const FormMark = () => {
 				}
 			}
 
+			console.log('Отправляем данные на сервер:', markerData)
+
 			const res = await fetch('/api/markers', {
 				method: 'POST',
 				headers: {
@@ -59,14 +61,17 @@ const FormMark = () => {
 
 				setMarks(prevMarks => [...prevMarks, result.marker])
 
-				// Добавляем метку на карту
+				// Проверка: координаты получены, карта инициализирована, добавляем метку
 				if (window.myMap && coordinates) {
 					const placemark = new window.ymaps.Placemark(
 						coordinates,
 						{ balloonContent: data.comment },
 						{ preset: 'islands#icon', iconColor: '#0095b6' }
 					)
+					console.log('Добавляем метку на карту с координатами:', coordinates)
 					window.myMap.geoObjects.add(placemark)
+				} else {
+					console.error('Карта не инициализирована или координаты отсутствуют.')
 				}
 			} else {
 				console.error('Ошибка при добавлении метки:', res)
