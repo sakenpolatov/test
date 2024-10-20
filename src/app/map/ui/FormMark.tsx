@@ -63,11 +63,8 @@ const FormMark = () => {
 
 			const firstResult = results[0]?.GeoObject.Point.pos.split(' ').map(Number)
 			if (firstResult && window.myMap) {
+				// Перемещаем центр карты на новую локацию
 				window.myMap.setCenter(firstResult, 12)
-				const placemark = new window.ymaps.Placemark(firstResult, {
-					balloonContent: location
-				})
-				window.myMap.geoObjects.add(placemark)
 			}
 		} catch (error) {
 			console.error('Ошибка при геокодировании:', error)
