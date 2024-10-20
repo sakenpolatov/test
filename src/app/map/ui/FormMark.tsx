@@ -54,16 +54,28 @@ const FormMark = () => {
 		const location = form.getValues('location')
 		if (!location) return
 
-		const geocoderUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&format=json&geocode=${location}`
+		const geocoderUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&format=json&geocode=${encodeURIComponent(
+			location
+		)}`
 
 		try {
 			const res = await fetch(geocoderUrl)
 			const data = await res.json()
+
+			// Логируем данные для отладки
+			console.log('Geocoding response:', data)
+
 			const results = data.response.GeoObjectCollection.featureMember
 
+			if (!results || results.length === 0) {
+				console.error('Не найдено местоположение для указанного адреса')
+				return
+			}
+
 			const firstResult = results[0]?.GeoObject.Point.pos.split(' ').map(Number)
+			console.log('Координаты первого результата:', firstResult)
+
 			if (firstResult && window.myMap) {
-				// Перемещаем центр карты на новую локацию
 				window.myMap.setCenter(firstResult, 12)
 			}
 		} catch (error) {
