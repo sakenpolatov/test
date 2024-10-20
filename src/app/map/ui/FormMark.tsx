@@ -67,16 +67,20 @@ const FormMark = () => {
 
 			const results = data.response.GeoObjectCollection.featureMember
 
+			// Если результат отсутствует, логируем ошибку
 			if (!results || results.length === 0) {
 				console.error('Не найдено местоположение для указанного адреса')
 				return
 			}
 
+			// Получаем координаты и преобразуем их
 			const firstResult = results[0]?.GeoObject.Point.pos.split(' ').map(Number)
 			console.log('Координаты первого результата:', firstResult)
 
+			// Устанавливаем центр карты на найденное местоположение
 			if (firstResult && window.myMap) {
-				window.myMap.setCenter(firstResult, 12)
+				const [longitude, latitude] = firstResult
+				window.myMap.setCenter([latitude, longitude], 12)
 			}
 		} catch (error) {
 			console.error('Ошибка при геокодировании:', error)
