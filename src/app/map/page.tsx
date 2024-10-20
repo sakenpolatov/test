@@ -6,6 +6,7 @@ import YandexMap from './ui/YandexMap'
 import TableMarks from './ui/TableMarks'
 import { useSession } from 'next-auth/react'
 import Unlogged from './ui/Unlogged'
+import { MarksProvider } from '@/context/MarksContext'
 
 const MapPage = () => {
 	const { data: session, status } = useSession()
@@ -19,20 +20,22 @@ const MapPage = () => {
 	}
 
 	return (
-		<main className='flex flex-col items-center justify-center p-24 space-y-6'>
-			<div className='flex w-full justify-between space-x-6'>
-				<div className='w-1/2'>
-					<FormMark />
-				</div>
+		<MarksProvider>
+			<main className='flex flex-col items-center justify-center p-24 space-y-6'>
+				<div className='flex w-full justify-between space-x-6'>
+					<div className='w-1/2'>
+						<FormMark />
+					</div>
 
-				<div className='w-1/2'>
-					<YandexMap />
+					<div className='w-1/2'>
+						<YandexMap />
+					</div>
 				</div>
-			</div>
-			<div className='w-full flex justify-center'>
-				<TableMarks />
-			</div>
-		</main>
+				<div className='w-full flex justify-center'>
+					<TableMarks />
+				</div>
+			</main>
+		</MarksProvider>
 	)
 }
 

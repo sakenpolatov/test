@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Types } from 'mongoose'
+import User from '@@/models/UserModel'
 
 export interface IMarker extends Document {
 	user: Types.ObjectId
@@ -30,6 +31,22 @@ const MarkerSchema: Schema = new mongoose.Schema({
 		type: String
 	}
 })
+
+MarkerSchema.pre(
+	'deleteOne',
+	{ document: true, query: false },
+	async function (next) {
+		try {
+			await User.updateMany(
+				{ markers: this._id },
+				{ $pull: { markers: this._id } }
+			)
+			next()
+		} catch (err: unknown) {
+			next(err as Error)
+		}
+	}
+)
 
 const Marker =
 	mongoose.models.Marker || mongoose.model<IMarker>('Marker', MarkerSchema)

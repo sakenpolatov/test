@@ -1,5 +1,3 @@
-'use client'
-
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,8 +11,11 @@ import {
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { markFormSchema } from '@/lib/schemas'
+import { useMarks } from '@/context/MarksContext'
 
 const FormMark = () => {
+	const { setMarks } = useMarks()
+
 	const form = useForm({
 		resolver: zodResolver(markFormSchema),
 		defaultValues: {
@@ -38,6 +39,12 @@ const FormMark = () => {
 			if (res.ok) {
 				const result = await res.json()
 				console.log('Метка успешно добавлена:', result)
+
+				// Обновляем метки через контекст
+				setMarks(prevMarks => [...prevMarks, result.marker])
+
+				// Очищаем форму после успешного добавления
+				form.reset()
 			} else {
 				console.error('Ошибка при добавлении метки:', res)
 			}
