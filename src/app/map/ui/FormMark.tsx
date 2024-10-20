@@ -17,7 +17,7 @@ import { useState } from 'react'
 
 const FormMark = () => {
 	const { setMarks } = useMarks()
-	const [coordinates, setCoordinates] = useState<[number, number] | null>(null) // Сохраняем координаты
+	const [coordinates, setCoordinates] = useState<[number, number] | null>(null)
 
 	const form = useForm({
 		resolver: zodResolver(markFormSchema),

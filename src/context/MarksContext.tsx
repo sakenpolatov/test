@@ -1,11 +1,15 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 
-interface Marker {
+export interface Marker {
 	_id: string
 	type: string
 	address: string
 	label: string
 	description: string
+	coordinates: {
+		latitude: number
+		longitude: number
+	}
 }
 
 const MarksContext = createContext<{

@@ -1,8 +1,11 @@
 'use client'
 
+import { Marker, useMarks } from '@/context/MarksContext'
 import React, { useEffect } from 'react'
 
 const YandexMap = () => {
+	const { marks } = useMarks() // marks должны быть массивом объектов типа Marker
+
 	useEffect(() => {
 		// Если карта уже существует, уничтожаем её перед инициализацией
 		if (window.myMap) {
@@ -60,6 +63,30 @@ const YandexMap = () => {
 			document.body.removeChild(heatmapScript)
 		}
 	}, [])
+
+	useEffect(() => {
+		const addPlacemarks = () => {
+			if (window.myMap) {
+				window.myMap.geoObjects.removeAll()
+
+				marks.forEach((marker: Marker) => {
+					if (marker.coordinates) {
+						// Проверяем, что координаты есть
+						const placemark = new window.ymaps.Placemark(
+							[marker.coordinates.latitude, marker.coordinates.longitude],
+							{ balloonContent: marker.description || '' },
+							{ preset: 'islands#icon', iconColor: '#0095b6' }
+						)
+						window.myMap?.geoObjects.add(placemark)
+					} else {
+						console.error('Координаты не найдены для метки:', marker)
+					}
+				})
+			}
+		}
+
+		addPlacemarks()
+	}, [marks])
 
 	return (
 		<div
