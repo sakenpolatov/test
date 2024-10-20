@@ -35,8 +35,6 @@ const FormMark = () => {
 				console.error('Координаты не найдены, нельзя создать метку')
 				return
 			}
-
-			// Добавляем координаты к данным перед отправкой
 			const markerData = {
 				...data,
 				coordinates: {
@@ -61,7 +59,6 @@ const FormMark = () => {
 
 				setMarks(prevMarks => [...prevMarks, result.marker])
 
-				// Проверка: координаты получены, карта инициализирована, добавляем метку
 				if (window.myMap && coordinates) {
 					const placemark = new window.ymaps.Placemark(
 						coordinates,
@@ -73,6 +70,8 @@ const FormMark = () => {
 				} else {
 					console.error('Карта не инициализирована или координаты отсутствуют.')
 				}
+
+				form.reset()
 			} else {
 				console.error('Ошибка при добавлении метки:', res)
 			}
