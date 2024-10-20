@@ -39,11 +39,7 @@ const FormMark = () => {
 			if (res.ok) {
 				const result = await res.json()
 				console.log('Метка успешно добавлена:', result)
-
-				// Обновляем метки через контекст
 				setMarks(prevMarks => [...prevMarks, result.marker])
-
-				// Очищаем форму после успешного добавления
 				form.reset()
 			} else {
 				console.error('Ошибка при добавлении метки:', res)

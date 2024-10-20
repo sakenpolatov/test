@@ -47,7 +47,6 @@ MarkerSchema.pre(
 		}
 	}
 )
-
 const Marker =
 	mongoose.models.Marker || mongoose.model<IMarker>('Marker', MarkerSchema)
 

@@ -15,11 +15,12 @@ import {
 	PaginationPrevious,
 	PaginationNext
 } from '@/components/ui/pagination'
+import { MdDeleteForever } from 'react-icons/md'
 import NoMarkers from './NoMarkers'
 import { useMarks } from '@/context/MarksContext'
 
 const TableMarks = () => {
-	const { marks } = useMarks()
+	const { marks, handleDelete } = useMarks()
 	const [currentPage, setCurrentPage] = useState(1)
 	const itemsPerPage = 1
 
@@ -54,6 +55,9 @@ const TableMarks = () => {
 								<TableHead className='bg-gray-500 text-gray-700 w-3/12 border border-black text-center'>
 									Комментарии
 								</TableHead>
+								<TableHead className='bg-gray-500 text-gray-700 w-1/12 border border-black text-center'>
+									Действия
+								</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
@@ -71,12 +75,18 @@ const TableMarks = () => {
 									<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.description}
 									</TableCell>
+									<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
+										<button
+											onClick={() => handleDelete(item._id)}
+											className='text-gray-500 hover:text-white'
+										>
+											<MdDeleteForever className='w-6 h-6' />
+										</button>
+									</TableCell>
 								</TableRow>
 							))}
 						</TableBody>
 					</Table>
-
-					{/* Компонент пагинации */}
 					<Pagination className='mt-4'>
 						<PaginationPrevious
 							onClick={() =>
