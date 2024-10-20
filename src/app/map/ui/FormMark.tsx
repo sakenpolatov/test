@@ -60,15 +60,16 @@ const FormMark = () => {
 					console.log('Координаты для новой метки:', firstResult)
 
 					if (firstResult && window.myMap) {
+						// Устанавливаем центр карты на координаты новой метки и устанавливаем зум на 18
+						window.myMap.setCenter(firstResult, 18)
+
 						// Добавляем метку на карту
 						const placemark = new window.ymaps.Placemark(
 							firstResult,
 							{
-								balloonContent: data.location // Название или описание метки
+								balloonContent: data.comment // Название или описание метки
 							},
-							{
-								preset: 'islands#blueDotIcon' // Настройка иконки метки
-							}
+							{ preset: 'islands#icon', iconColor: '#0095b6' }
 						)
 						window.myMap.geoObjects.add(placemark)
 					}
@@ -111,10 +112,10 @@ const FormMark = () => {
 			const firstResult = results[0]?.GeoObject.Point.pos.split(' ').map(Number)
 			console.log('Координаты первого результата:', firstResult)
 
-			// Устанавливаем центр карты на найденное местоположение
+			// Устанавливаем центр карты на найденное местоположение с зумом 18
 			if (firstResult && window.myMap) {
 				const [longitude, latitude] = firstResult
-				window.myMap.setCenter([latitude, longitude], 12)
+				window.myMap.setCenter([latitude, longitude], 18)
 			}
 		} catch (error) {
 			console.error('Ошибка при геокодировании:', error)

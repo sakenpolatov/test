@@ -35,16 +35,6 @@ const YandexMap = () => {
 							zoom: 9,
 							controls: ['zoomControl', 'geolocationControl']
 						})
-
-						const placemark = new window.ymaps.Placemark(
-							[55.751574, 37.573856],
-							{ balloonContent: 'Метка на карте' },
-							{ preset: 'islands#icon', iconColor: '#0095b6' }
-						)
-
-						if (window.myMap) {
-							window.myMap.geoObjects.add(placemark)
-						}
 					}
 				})
 			} else {
