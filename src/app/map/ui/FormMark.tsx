@@ -30,21 +30,13 @@ const FormMark = () => {
 	})
 
 	const onSubmit = async (data: any) => {
-		if (!coordinates) {
-			console.error('Координаты не найдены, нельзя создать метку')
-			return
-		}
-
 		try {
-			// Логируем перед отправкой
-			console.log('Отправка данных с координатами:', {
-				...data,
-				coordinates: {
-					latitude: coordinates[1],
-					longitude: coordinates[0]
-				}
-			})
+			if (!coordinates) {
+				console.error('Координаты не найдены, нельзя создать метку')
+				return
+			}
 
+			// Добавляем координаты к данным перед отправкой
 			const markerData = {
 				...data,
 				coordinates: {
@@ -63,18 +55,15 @@ const FormMark = () => {
 
 			if (res.ok) {
 				const result = await res.json()
-				console.log('Метка успешно добавлена:', result)
+				console.log('Метка успешно добавлена с координатами:', result)
+
 				setMarks(prevMarks => [...prevMarks, result.marker])
 
-				// Логируем координаты для добавления метки на карте
-				console.log('Добавление метки на карте с координатами:', coordinates)
-
+				// Добавляем метку на карту
 				if (window.myMap && coordinates) {
 					const placemark = new window.ymaps.Placemark(
 						coordinates,
-						{
-							balloonContent: data.comment
-						},
+						{ balloonContent: data.comment },
 						{ preset: 'islands#icon', iconColor: '#0095b6' }
 					)
 					window.myMap.geoObjects.add(placemark)

@@ -58,6 +58,9 @@ const TableMarks = () => {
 								<TableHead className='bg-gray-500 text-gray-700 w-1/12 border border-black text-center'>
 									Действия
 								</TableHead>
+								<TableHead className='bg-gray-500 text-gray-700 w-2/12 border border-black text-center'>
+									Координаты
+								</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
@@ -74,6 +77,11 @@ const TableMarks = () => {
 									</TableCell>
 									<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.description}
+									</TableCell>
+									<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
+										{item.coordinates
+											? `${item.coordinates.latitude}, ${item.coordinates.longitude}`
+											: 'Не указаны'}
 									</TableCell>
 									<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
 										<button
