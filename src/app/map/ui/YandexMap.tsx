@@ -51,7 +51,7 @@ const YandexMap = () => {
 		if (window.myMap && currentCoordinates.length > 0) {
 			window.myMap.setCenter(
 				[currentCoordinates[0].latitude, currentCoordinates[0].longitude],
-				9
+				15
 			)
 		}
 	}, [currentCoordinates])
