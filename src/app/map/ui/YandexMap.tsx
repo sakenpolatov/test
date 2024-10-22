@@ -1,33 +1,13 @@
-'use client'
-
+import React, { useEffect, useCallback } from 'react'
 import { useMarks } from '@/context/MarksContext'
-import React, { useEffect } from 'react'
 
 const YandexMap = () => {
 	const { marks, currentCoordinates } = useMarks()
 
-	useEffect(() => {
-		if (window.myMap) {
-			window.myMap.destroy()
-			window.myMap = null
-		}
-
-		const yandexMapScript = document.createElement('script')
-		yandexMapScript.src =
-			'https://api-maps.yandex.ru/2.1/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&lang=ru_RU'
-		yandexMapScript.async = true
-
-		const heatmapScript = document.createElement('script')
-		heatmapScript.src =
-			'https://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js'
-		heatmapScript.async = true
-
-		document.body.appendChild(yandexMapScript)
-		document.body.appendChild(heatmapScript)
-
-		const initializeMap = () => {
-			if (window.ymaps) {
-				window.ymaps.ready(() => {
+	const initializeMap = useCallback(() => {
+		if (window.ymaps) {
+			window.ymaps.ready(() => {
+				try {
 					if (!window.myMap) {
 						window.myMap = new window.ymaps.Map('map', {
 							center: currentCoordinates[0] || [55.751574, 37.573856],
@@ -35,32 +15,40 @@ const YandexMap = () => {
 							controls: ['zoomControl', 'geolocationControl']
 						})
 					}
-				})
-			} else {
-				console.error('Yandex Maps API не загружен.')
-			}
+				} catch (error) {
+					console.error('Ошибка при инициализации карты:', error)
+				}
+			})
+		} else {
+			console.error('Yandex Maps API не загружен.')
 		}
-
-		yandexMapScript.onload = () => {
-			initializeMap()
-		}
-
-		heatmapScript.onload = () => {
-			console.log('Yandex Heatmap script loaded')
-		}
-
-		return () => {
-			if (window.myMap) {
-				window.myMap.destroy()
-				window.myMap = null
-			}
-			document.body.removeChild(yandexMapScript)
-			document.body.removeChild(heatmapScript)
-		}
-	}, [])
+	}, [currentCoordinates])
 
 	useEffect(() => {
-		if (window.myMap && currentCoordinates.length) {
+		const existingScript = document.querySelector(
+			'script[src*="api-maps.yandex.ru"]'
+		)
+		if (!existingScript) {
+			const yandexMapScript = document.createElement('script')
+			yandexMapScript.src =
+				'https://api-maps.yandex.ru/2.1/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&lang=ru_RU'
+			yandexMapScript.async = true
+			document.body.appendChild(yandexMapScript)
+
+			yandexMapScript.onload = () => {
+				initializeMap()
+			}
+
+			yandexMapScript.onerror = () => {
+				console.error('Ошибка загрузки Yandex Maps API.')
+			}
+		} else {
+			initializeMap()
+		}
+	}, [initializeMap])
+
+	useEffect(() => {
+		if (window.myMap && currentCoordinates.length > 0) {
 			window.myMap.setCenter(
 				[currentCoordinates[0].latitude, currentCoordinates[0].longitude],
 				9
@@ -80,7 +68,14 @@ const YandexMap = () => {
 							{ balloonContent: marker.description || '' },
 							{ preset: 'islands#icon', iconColor: '#0095b6' }
 						)
-						window.myMap?.geoObjects.add(placemark)
+
+						if (window.myMap) {
+							window.myMap.geoObjects.add(placemark)
+						} else {
+							console.error(
+								'Карта не инициализирована, не удается добавить метку.'
+							)
+						}
 					}
 				})
 			}
@@ -92,11 +87,7 @@ const YandexMap = () => {
 	return (
 		<div
 			id='map'
-			style={{
-				width: '100%',
-				height: '500px',
-				border: '4px solid #ffffff'
-			}}
+			style={{ width: '100%', height: '500px', border: '4px solid #ffffff' }}
 		></div>
 	)
 }

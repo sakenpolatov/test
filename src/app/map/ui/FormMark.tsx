@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { markFormSchema } from '@/lib/schemas'
 import { useMarks } from '@/context/MarksContext'
 import { FaSearchLocation } from 'react-icons/fa'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 
 const FormMark = () => {
 	const { setMarks } = useMarks()
@@ -205,4 +205,4 @@ const FormMark = () => {
 	)
 }
 
-export default FormMark
+export default memo(FormMark)

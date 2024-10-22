@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import {
 	Table,
 	TableHeader,
@@ -26,7 +26,10 @@ const TableMarks = () => {
 
 	const indexOfLastItem = currentPage * itemsPerPage
 	const indexOfFirstItem = indexOfLastItem - itemsPerPage
-	const currentItems = marks.slice(indexOfFirstItem, indexOfLastItem)
+
+	const currentItems = useMemo(() => {
+		return marks.slice(indexOfFirstItem, indexOfLastItem)
+	}, [marks, currentPage])
 
 	const totalPages = Math.ceil(marks.length / itemsPerPage)
 
@@ -37,7 +40,7 @@ const TableMarks = () => {
 	useEffect(() => {
 		const coordinates = currentItems.map(item => item.coordinates)
 		setCurrentCoordinates(coordinates)
-	}, [currentItems])
+	}, [currentItems, setCurrentCoordinates])
 
 	return (
 		<>
@@ -69,26 +72,26 @@ const TableMarks = () => {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{currentItems.map((item: any, index) => (
+							{currentItems.map((item, index) => (
 								<TableRow key={index} className='hover:bg-transparent'>
-									<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
+									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.type}
 									</TableCell>
-									<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
+									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.address}
 									</TableCell>
-									<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
+									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.label}
 									</TableCell>
-									<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
+									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.description}
 									</TableCell>
-									<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
+									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.coordinates
 											? `${item.coordinates.latitude}, ${item.coordinates.longitude}`
 											: 'Не указаны'}
 									</TableCell>
-									<TableCell className=' bg-gray-600 whitespace-nowrap border-black text-center'>
+									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										<button
 											onClick={() => handleDelete(item._id)}
 											className='text-gray-500 hover:text-white'
@@ -132,4 +135,4 @@ const TableMarks = () => {
 	)
 }
 
-export default TableMarks
+export default memo(TableMarks)

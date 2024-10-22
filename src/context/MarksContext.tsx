@@ -52,8 +52,7 @@ export const MarksProvider = ({ children }: any) => {
 
 			if (res.ok) {
 				console.log('Метка успешно удалена')
-
-				await fetchMarks()
+				setMarks(prevMarks => prevMarks.filter(mark => mark._id !== id))
 			} else {
 				console.error('Ошибка при удалении метки:', res)
 			}
