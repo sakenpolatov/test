@@ -18,7 +18,7 @@ import {
 import { MdDeleteForever } from 'react-icons/md'
 import NoMarkers from './NoMarkers'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { handleDelete } from '@/redux/slices/marksSlice'
+import { handleDelete, setCurrentCoordinates } from '@/redux/slices/marksSlice'
 import { fetchMarks } from '@/redux/asyncActions/marksActions'
 
 const TableMarks = () => {
@@ -38,6 +38,9 @@ const TableMarks = () => {
 
 	const handlePageChange = (page: number) => {
 		setCurrentPage(page)
+		if (marks[page - 1]) {
+			dispatch(setCurrentCoordinates(marks[page - 1].coordinates))
+		}
 	}
 
 	useEffect(() => {
