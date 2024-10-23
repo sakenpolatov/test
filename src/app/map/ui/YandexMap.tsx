@@ -2,15 +2,15 @@ import React, { useEffect, useCallback } from 'react'
 import { useAppSelector } from '@/redux/hooks'
 
 const YandexMap = () => {
-	const { marks, coordinates } = useAppSelector(state => state.marks)
+	const { marks, currentCoordinates } = useAppSelector(state => state.marks)
 
 	const initializeMap = useCallback(() => {
 		if (window.ymaps) {
 			window.ymaps.ready(() => {
 				try {
 					if (!window.myMap) {
-						const centerCoordinates = coordinates
-							? [coordinates.latitude, coordinates.longitude]
+						const centerCoordinates = currentCoordinates
+							? [currentCoordinates.latitude, currentCoordinates.longitude]
 							: [55.751574, 37.573856]
 						window.myMap = new window.ymaps.Map('map', {
 							center: centerCoordinates,
@@ -25,7 +25,7 @@ const YandexMap = () => {
 		} else {
 			console.error('Yandex Maps API не загружен.')
 		}
-	}, [coordinates])
+	}, [currentCoordinates])
 
 	useEffect(() => {
 		const existingScript = document.querySelector(
@@ -51,15 +51,18 @@ const YandexMap = () => {
 	}, [initializeMap])
 
 	useEffect(() => {
-		if (window.myMap && coordinates) {
-			if (coordinates.latitude !== null && coordinates.longitude !== null) {
+		if (window.myMap && currentCoordinates) {
+			if (
+				currentCoordinates.latitude !== null &&
+				currentCoordinates.longitude !== null
+			) {
 				window.myMap.setCenter(
-					[coordinates.latitude, coordinates.longitude],
+					[currentCoordinates.latitude, currentCoordinates.longitude],
 					15
 				)
 			}
 		}
-	}, [coordinates])
+	}, [currentCoordinates])
 
 	useEffect(() => {
 		const addPlacemarks = () => {
