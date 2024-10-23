@@ -17,10 +17,13 @@ import {
 } from '@/components/ui/pagination'
 import { MdDeleteForever } from 'react-icons/md'
 import NoMarkers from './NoMarkers'
-import { useMarks } from '@/context/MarksContext'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { handleDelete } from '@/redux/slices/marksSlice'
+import { fetchMarks } from '@/redux/asyncActions/marksActions'
 
 const TableMarks = () => {
-	const { marks, handleDelete, setCurrentCoordinates } = useMarks()
+	const dispatch = useAppDispatch()
+	const marks = useAppSelector(state => state.marks.marks)
 	const [currentPage, setCurrentPage] = useState(1)
 	const itemsPerPage = 1
 
@@ -38,9 +41,8 @@ const TableMarks = () => {
 	}
 
 	useEffect(() => {
-		const coordinates = currentItems.map(item => item.coordinates)
-		setCurrentCoordinates(coordinates)
-	}, [currentItems, setCurrentCoordinates])
+		dispatch(fetchMarks())
+	}, [dispatch])
 
 	return (
 		<>
@@ -72,8 +74,8 @@ const TableMarks = () => {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{currentItems.map((item, index) => (
-								<TableRow key={index} className='hover:bg-transparent'>
+							{currentItems.map(item => (
+								<TableRow key={item._id} className='hover:bg-transparent'>
 									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.type}
 									</TableCell>
@@ -93,7 +95,7 @@ const TableMarks = () => {
 									</TableCell>
 									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										<button
-											onClick={() => handleDelete(item._id)}
+											onClick={() => dispatch(handleDelete(item._id))}
 											className='text-gray-500 hover:text-white'
 										>
 											<MdDeleteForever className='w-6 h-6' />

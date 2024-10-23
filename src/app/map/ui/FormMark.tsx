@@ -1,3 +1,4 @@
+import React, { memo } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,13 +12,15 @@ import {
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { markFormSchema } from '@/lib/schemas'
-import { useMarks } from '@/context/MarksContext'
 import { FaSearchLocation } from 'react-icons/fa'
-import { memo, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { setMarks, setCoordinates } from '@/redux/slices/marksSlice'
+import { IFormData, IMarker } from '@@/types/types'
+import { fetchMarks } from '@/redux/asyncActions/marksActions'
 
 const FormMark = () => {
-	const { setMarks } = useMarks()
-	const [coordinates, setCoordinates] = useState<[number, number] | null>(null)
+	const dispatch = useAppDispatch()
+	const coordinates = useAppSelector(state => state.marks.coordinates)
 
 	const form = useForm({
 		resolver: zodResolver(markFormSchema),
@@ -29,17 +32,22 @@ const FormMark = () => {
 		}
 	})
 
-	const onSubmit = async (data: any) => {
+	const onSubmit = async (data: IFormData) => {
 		try {
-			if (!coordinates) {
+			if (
+				!coordinates ||
+				coordinates.latitude === null ||
+				coordinates.longitude === null
+			) {
 				console.error('Координаты не найдены, нельзя создать метку')
 				return
 			}
+
 			const markerData = {
 				...data,
 				coordinates: {
-					latitude: coordinates[1],
-					longitude: coordinates[0]
+					latitude: coordinates.latitude,
+					longitude: coordinates.longitude
 				}
 			}
 
@@ -57,11 +65,13 @@ const FormMark = () => {
 				const result = await res.json()
 				console.log('Метка успешно добавлена с координатами:', result)
 
-				setMarks(prevMarks => [...prevMarks, result.marker])
+				dispatch(
+					setMarks((prevMarks: IMarker[]) => [...prevMarks, result.marker])
+				)
 
-				if (window.myMap && coordinates) {
+				if (window.myMap) {
 					const placemark = new window.ymaps.Placemark(
-						coordinates,
+						[coordinates.longitude, coordinates.latitude],
 						{ balloonContent: data.comment },
 						{ preset: 'islands#icon', iconColor: '#0095b6' }
 					)
@@ -72,6 +82,7 @@ const FormMark = () => {
 				}
 
 				form.reset()
+				dispatch(fetchMarks())
 			} else {
 				console.error('Ошибка при добавлении метки:', res)
 			}
@@ -106,8 +117,8 @@ const FormMark = () => {
 
 			if (firstResult && window.myMap) {
 				const [longitude, latitude] = firstResult
-				setCoordinates([longitude, latitude])
-				console.log('Координаты успешно обновлены:', [longitude, latitude])
+				dispatch(setCoordinates({ latitude, longitude }))
+				console.log('Координаты успешно обновлены:', { latitude, longitude })
 				window.myMap.setCenter([latitude, longitude], 18)
 			}
 		} catch (error) {

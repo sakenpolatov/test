@@ -29,7 +29,8 @@
 		"**/*.ts",
 		"**/*.tsx",
 		".next/types/**/*.ts",
-		"types/**/*.ts"
+		"types/**/*.ts",
+		"src/redux/asyncActions"
 	],
 	"exclude": ["node_modules"]
 }

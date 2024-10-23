@@ -1,16 +1,19 @@
 import React, { useEffect, useCallback } from 'react'
-import { useMarks } from '@/context/MarksContext'
+import { useAppSelector } from '@/redux/hooks'
 
 const YandexMap = () => {
-	const { marks, currentCoordinates } = useMarks()
+	const { marks, coordinates } = useAppSelector(state => state.marks)
 
 	const initializeMap = useCallback(() => {
 		if (window.ymaps) {
 			window.ymaps.ready(() => {
 				try {
 					if (!window.myMap) {
+						const centerCoordinates = coordinates
+							? [coordinates.latitude, coordinates.longitude]
+							: [55.751574, 37.573856]
 						window.myMap = new window.ymaps.Map('map', {
-							center: currentCoordinates[0] || [55.751574, 37.573856],
+							center: centerCoordinates,
 							zoom: 9,
 							controls: ['zoomControl', 'geolocationControl']
 						})
@@ -22,7 +25,7 @@ const YandexMap = () => {
 		} else {
 			console.error('Yandex Maps API не загружен.')
 		}
-	}, [currentCoordinates])
+	}, [coordinates])
 
 	useEffect(() => {
 		const existingScript = document.querySelector(
@@ -48,13 +51,15 @@ const YandexMap = () => {
 	}, [initializeMap])
 
 	useEffect(() => {
-		if (window.myMap && currentCoordinates.length > 0) {
-			window.myMap.setCenter(
-				[currentCoordinates[0].latitude, currentCoordinates[0].longitude],
-				15
-			)
+		if (window.myMap && coordinates) {
+			if (coordinates.latitude !== null && coordinates.longitude !== null) {
+				window.myMap.setCenter(
+					[coordinates.latitude, coordinates.longitude],
+					15
+				)
+			}
 		}
-	}, [currentCoordinates])
+	}, [coordinates])
 
 	useEffect(() => {
 		const addPlacemarks = () => {
