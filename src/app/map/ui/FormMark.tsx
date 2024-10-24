@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react'
+import React, { useState, useEffect, useRef, memo } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,11 +24,29 @@ const FormMark = () => {
 	const coordinates = useAppSelector(state => state.marks.coordinates)
 	const [suggestions, setSuggestions] = useState<Suggestion[]>([])
 	const [showSuggestions, setShowSuggestions] = useState(false)
+	const suggestionBoxRef = useRef<HTMLDivElement | null>(null)
 
 	const form = useForm({
 		resolver: zodResolver(markFormSchema),
 		defaultValues
 	})
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				suggestionBoxRef.current &&
+				!suggestionBoxRef.current.contains(event.target as Node)
+			) {
+				setShowSuggestions(false)
+			}
+		}
+
+		document.addEventListener('mousedown', handleClickOutside)
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside)
+		}
+	}, [])
 
 	const onSubmit = async (data: IFormData) => {
 		try {
@@ -103,12 +121,15 @@ const FormMark = () => {
 		}
 	}
 
-	// Функция для выбора варианта из предложений
 	const handleSelectSuggestion = (suggestion: Suggestion) => {
 		const [longitude, latitude] = suggestion.coordinates
 		dispatch(setCoordinates({ latitude, longitude }))
 		form.setValue('location', suggestion.name)
 		setShowSuggestions(false)
+
+		if (window.myMap) {
+			window.myMap.setCenter([latitude, longitude], 18)
+		}
 	}
 
 	return (
@@ -151,9 +172,12 @@ const FormMark = () => {
 									>
 										<FaSearchLocation />
 									</button>
-									{/* Выпадающий список предложений */}
+
 									{showSuggestions && suggestions.length > 0 && (
-										<div className='absolute z-10 mt-2 w-full bg-gray-600 border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto'>
+										<div
+											ref={suggestionBoxRef}
+											className='absolute z-10 mt-2 w-full bg-gray-600 border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto'
+										>
 											{suggestions.map(
 												(suggestion: Suggestion, index: number) => (
 													<div
