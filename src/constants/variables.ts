@@ -4,3 +4,5 @@ export const defaultValues = {
 	source: '',
 	comment: ''
 }
+
+export const initialItemsPerPage = 5
