@@ -15,7 +15,7 @@ const SuggestionList: React.FC<SuggestionListProps> = ({
 	return (
 		<div
 			ref={suggestionBoxRef}
-			className='absolute z-10 mt-2 w-full bg-gray-600 border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto'
+			className='absolute z-10 mt-2 w-full bg-gray-700 border border-gray-300 hover:bg-gray-300 hover:text-gray-700 rounded-md shadow-lg max-h-60 overflow-y-auto'
 		>
 			{suggestions.map((suggestion: Suggestion, index: number) => (
 				<div
