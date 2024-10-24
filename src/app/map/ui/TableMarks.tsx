@@ -35,13 +35,13 @@ const TableMarks = () => {
 				<NoMarkers />
 			) : (
 				<div className='w-full overflow-x-auto max-w-4xl mx-auto border-2 border-gray-500 shadow-lg rounded-md'>
-					<Table className='min-w-full table-fixed'>
+					<Table className='min-w-full'>
 						<TableHeader>
 							<TableRow>
 								<TableHead className='bg-gray-500 text-gray-700 w-1/12 border border-black text-center'>
 									Тип
 								</TableHead>
-								<TableHead className='bg-gray-500 text-gray-700 w-3/12 border border-black text-center'>
+								<TableHead className='bg-gray-500 text-gray-700 w-4/12 border border-black text-center'>
 									Локация
 								</TableHead>
 								<TableHead className='bg-gray-500 text-gray-700 w-3/12 border border-black text-center'>
@@ -50,7 +50,7 @@ const TableMarks = () => {
 								<TableHead className='bg-gray-500 text-gray-700 w-3/12 border border-black text-center'>
 									Комментарии
 								</TableHead>
-								<TableHead className='bg-gray-500 text-gray-700 w-2/12 border border-black text-center'>
+								<TableHead className='bg-gray-500 text-gray-700 w-4/12 border border-black text-center'>
 									Координаты
 								</TableHead>
 								<TableHead className='bg-gray-500 text-gray-700 w-1/12 border border-black text-center'>

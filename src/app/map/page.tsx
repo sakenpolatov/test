@@ -23,7 +23,7 @@ const MapPage = () => {
 	return (
 		<Provider store={store}>
 			<main className='flex flex-col items-center justify-center p-24 space-y-6'>
-				<div className='flex w-full justify-between space-x-6'>
+				<div className='flex w-full justify-between space-x-2'>
 					<div className='w-1/2'>
 						<FormMark />
 					</div>
