@@ -18,7 +18,7 @@ const YandexMap = () => {
 								: [55.751574, 37.573856]
 						window.myMap = new window.ymaps.Map('map', {
 							center: centerCoordinates,
-							zoom: 11,
+							zoom: 9,
 							controls: ['zoomControl', 'geolocationControl']
 						})
 					}
