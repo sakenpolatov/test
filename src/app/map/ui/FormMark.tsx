@@ -14,9 +14,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { markFormSchema } from '@/lib/schemas'
 import { FaSearchLocation } from 'react-icons/fa'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { setMarks, setCoordinates } from '@/redux/slices/marksSlice'
-import { IFormData, IMarker } from '@@/types/types'
-import { fetchMarks } from '@/redux/asyncActions/marksActions'
+import { setCoordinates } from '@/redux/slices/marksSlice'
+import { addMark, fetchMarks } from '@/redux/asyncActions/marksActions'
+import { IFormData } from '@@/types/types'
+import { defaultValues } from '@/constants/variables'
 
 const FormMark = () => {
 	const dispatch = useAppDispatch()
@@ -24,12 +25,7 @@ const FormMark = () => {
 
 	const form = useForm({
 		resolver: zodResolver(markFormSchema),
-		defaultValues: {
-			type: '',
-			location: '',
-			source: '',
-			comment: ''
-		}
+		defaultValues
 	})
 
 	const onSubmit = async (data: IFormData) => {
@@ -51,56 +47,15 @@ const FormMark = () => {
 				}
 			}
 
-			console.log('Отправляем данные на сервер:', markerData)
-
-			const res = await fetch('/api/markers', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(markerData)
-			})
-
-			if (res.ok) {
-				const result = await res.json()
-				console.log('Метка успешно добавлена с координатами:', result)
-
-				dispatch(
-					setMarks((prevMarks: IMarker[]) => {
-						console.log('Предыдущие маркеры:', prevMarks)
-
-						// Проверяем, что маркеры действительно массив
-						if (!Array.isArray(prevMarks)) {
-							console.error(
-								'Предыдущие маркеры не являются массивом:',
-								prevMarks
-							)
-							return [result.marker]
-						}
-
-						const updatedMarkers = [...prevMarks, result.marker]
-						console.log('Обновлённые маркеры:', updatedMarkers)
-						return updatedMarkers
-					})
-				)
-
-				if (window.myMap) {
-					const placemark = new window.ymaps.Placemark(
-						[coordinates.longitude, coordinates.latitude],
-						{ balloonContent: data.comment },
-						{ preset: 'islands#icon', iconColor: '#0095b6' }
-					)
-					console.log('Добавляем метку на карту с координатами:', coordinates)
-					window.myMap.geoObjects.add(placemark)
-				} else {
-					console.error('Карта не инициализирована или координаты отсутствуют.')
-				}
-
-				form.reset()
-				dispatch(fetchMarks())
-			} else {
-				console.error('Ошибка при добавлении метки:', res)
-			}
+			dispatch(addMark(markerData))
+				.unwrap()
+				.then(() => {
+					form.reset()
+					dispatch(fetchMarks())
+				})
+				.catch(error => {
+					console.error('Ошибка при добавлении метки:', error)
+				})
 		} catch (error) {
 			console.error('Ошибка:', error)
 		}
