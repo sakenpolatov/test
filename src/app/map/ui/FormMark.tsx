@@ -66,7 +66,22 @@ const FormMark = () => {
 				console.log('Метка успешно добавлена с координатами:', result)
 
 				dispatch(
-					setMarks((prevMarks: IMarker[]) => [...prevMarks, result.marker])
+					setMarks((prevMarks: IMarker[]) => {
+						console.log('Предыдущие маркеры:', prevMarks)
+
+						// Проверяем, что маркеры действительно массив
+						if (!Array.isArray(prevMarks)) {
+							console.error(
+								'Предыдущие маркеры не являются массивом:',
+								prevMarks
+							)
+							return [result.marker]
+						}
+
+						const updatedMarkers = [...prevMarks, result.marker]
+						console.log('Обновлённые маркеры:', updatedMarkers)
+						return updatedMarkers
+					})
 				)
 
 				if (window.myMap) {

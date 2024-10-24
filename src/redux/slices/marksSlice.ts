@@ -23,7 +23,11 @@ const marksSlice = createSlice({
 	initialState,
 	reducers: {
 		setMarks: (state, action) => {
-			state.markers = action.payload
+			if (Array.isArray(action.payload)) {
+				state.markers = action.payload
+			} else {
+				state.markers = [...state.markers, action.payload]
+			}
 		},
 		setCoordinates: (state, action) => {
 			state.coordinates = action.payload
