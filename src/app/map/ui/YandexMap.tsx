@@ -3,6 +3,7 @@ import { useAppSelector } from '@/redux/hooks'
 
 const YandexMap = () => {
 	const { markers, currentCoordinates } = useAppSelector(state => state.marks)
+	const apiKey = process.env.NEXT_PUBLIC_YANDEX_API_KEY
 
 	const initializeMap = useCallback(() => {
 		if (window.ymaps) {
@@ -36,8 +37,7 @@ const YandexMap = () => {
 		)
 		if (!existingScript) {
 			const yandexMapScript = document.createElement('script')
-			yandexMapScript.src =
-				'https://api-maps.yandex.ru/2.1/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&lang=ru_RU'
+			yandexMapScript.src = `https://api-maps.yandex.ru/2.1/?apikey=${apiKey}&lang=ru_RU`
 			yandexMapScript.async = true
 			document.body.appendChild(yandexMapScript)
 

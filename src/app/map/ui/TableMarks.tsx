@@ -11,10 +11,7 @@ import { MdDeleteForever } from 'react-icons/md'
 import NoMarkers from './NoMarkers'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { deleteMark, fetchMarks } from '@/redux/asyncActions/marksActions'
-import {
-	setCoordinates,
-	setCurrentCoordinates
-} from '@/redux/slices/marksSlice'
+import { setCurrentCoordinates } from '@/redux/slices/marksSlice'
 import { ICoordinates } from '@@/types/types'
 
 const TableMarks = () => {
