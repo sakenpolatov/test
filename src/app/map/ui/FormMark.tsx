@@ -153,7 +153,7 @@ const FormMark = () => {
 									</button>
 									{/* Выпадающий список предложений */}
 									{showSuggestions && suggestions.length > 0 && (
-										<div className='absolute z-10 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto'>
+										<div className='absolute z-10 mt-2 w-full bg-gray-600 border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto'>
 											{suggestions.map(
 												(suggestion: Suggestion, index: number) => (
 													<div
