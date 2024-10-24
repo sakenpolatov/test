@@ -32,7 +32,6 @@ const YandexMap = () => {
 	}, [currentCoordinates])
 
 	useEffect(() => {
-		// Загрузка скрипта для Yandex Maps
 		const existingScript = document.querySelector(
 			'script[src*="api-maps.yandex.ru"]'
 		)
@@ -43,7 +42,6 @@ const YandexMap = () => {
 			document.body.appendChild(yandexMapScript)
 
 			yandexMapScript.onload = () => {
-				// Загрузка скрипта для тепловой карты
 				const heatmapScript = document.createElement('script')
 				heatmapScript.src =
 					'https://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js'
