@@ -20,10 +20,17 @@ export async function DELETE(
 
 		await marker.deleteOne()
 
-		await UserModel.updateMany(
+		const userUpdateResult = await UserModel.updateOne(
 			{ markers: marker._id },
 			{ $pull: { markers: marker._id } }
 		)
+
+		if (userUpdateResult.modifiedCount === 0) {
+			return NextResponse.json(
+				{ message: 'Метка удалена, но обновление пользователя не выполнено' },
+				{ status: 500 }
+			)
+		}
 
 		return NextResponse.json(
 			{ message: 'Метка успешно удалена' },
