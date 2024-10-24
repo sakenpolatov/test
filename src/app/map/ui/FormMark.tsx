@@ -51,6 +51,7 @@ const FormMark = () => {
 				.unwrap()
 				.then(() => {
 					form.reset()
+					dispatch(setCoordinates({ latitude: null, longitude: null }))
 					dispatch(fetchMarks())
 				})
 				.catch(error => {
