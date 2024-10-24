@@ -9,7 +9,7 @@ import { IFormData, Suggestion } from '@@/types/types'
 import { useLocationSuggestions } from '@/hooks/useLocationSuggestions'
 
 import { defaultValues } from '@/constants/variables'
-import Markup from './Markup'
+import Markup from './FormUi'
 
 const FormMark = memo(() => {
 	const dispatch = useAppDispatch()

@@ -23,7 +23,7 @@ interface MarkupProps {
 	suggestionBoxRef: React.RefObject<HTMLDivElement>
 }
 
-const Markup: React.FC<MarkupProps> = ({
+const FormUi: React.FC<MarkupProps> = ({
 	form,
 	onSubmit,
 	handleSearch,
@@ -129,4 +129,4 @@ const Markup: React.FC<MarkupProps> = ({
 	)
 }
 
-export default Markup
+export default FormUi
