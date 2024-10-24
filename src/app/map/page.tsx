@@ -8,12 +8,13 @@ import TableMarks from './ui/TableMarks'
 import { useSession } from 'next-auth/react'
 import Unlogged from './ui/Unlogged'
 import store from '@/redux/store'
+import Loader from '@@/components/Loader/loader'
 
 const MapPage = () => {
 	const { data: session, status } = useSession()
 
 	if (status === 'loading') {
-		return <p>Loading...</p>
+		return <Loader />
 	}
 
 	if (!session) {
