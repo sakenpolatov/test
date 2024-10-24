@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { toast } from 'sonner' // Импортируем метод toast из Sonner
+import { toast } from 'sonner' 
 import { GeoObject, Suggestion } from '@@/types/types'
 
 export const useLocationSuggestions = () => {
@@ -53,7 +53,6 @@ export const useLocationSuggestions = () => {
 			setSuggestions(suggestionsList)
 			setShowSuggestions(true)
 		} catch (error) {
-			// Показываем тостер Sonner при ошибке
 			toast.error('Ошибка при геокодировании')
 			console.error('Ошибка при геокодировании:', error)
 		}
