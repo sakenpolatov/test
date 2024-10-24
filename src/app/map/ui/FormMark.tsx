@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { useState, memo } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,12 +16,14 @@ import { FaSearchLocation } from 'react-icons/fa'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { setCoordinates } from '@/redux/slices/marksSlice'
 import { addMark, fetchMarks } from '@/redux/asyncActions/marksActions'
-import { IFormData } from '@@/types/types'
+import { GeoObject, IFormData, Suggestion } from '@@/types/types'
 import { defaultValues } from '@/constants/variables'
 
 const FormMark = () => {
 	const dispatch = useAppDispatch()
 	const coordinates = useAppSelector(state => state.marks.coordinates)
+	const [suggestions, setSuggestions] = useState<Suggestion[]>([])
+	const [showSuggestions, setShowSuggestions] = useState(false)
 
 	const form = useForm({
 		resolver: zodResolver(markFormSchema),
@@ -74,27 +76,39 @@ const FormMark = () => {
 			const res = await fetch(geocoderUrl)
 			const data = await res.json()
 
-			console.log('Geocoding response:', data)
-
-			const results = data.response.GeoObjectCollection.featureMember
+			const results: GeoObject[] =
+				data.response.GeoObjectCollection.featureMember.map(
+					(item: any) => item.GeoObject
+				)
 
 			if (!results || results.length === 0) {
 				console.error('Не найдено местоположение для указанного адреса')
 				return
 			}
 
-			const firstResult = results[0]?.GeoObject.Point.pos.split(' ').map(Number)
-			console.log('Координаты первого результата:', firstResult)
+			const suggestionsList: Suggestion[] = results
+				.slice(0, 10)
+				.map(result => ({
+					name: result.name,
+					coordinates: result.Point.pos.split(' ').map(Number) as [
+						number,
+						number
+					]
+				}))
 
-			if (firstResult && window.myMap) {
-				const [longitude, latitude] = firstResult
-				dispatch(setCoordinates({ latitude, longitude }))
-				console.log('Координаты успешно обновлены:', { latitude, longitude })
-				window.myMap.setCenter([latitude, longitude], 18)
-			}
+			setSuggestions(suggestionsList)
+			setShowSuggestions(true)
 		} catch (error) {
 			console.error('Ошибка при геокодировании:', error)
 		}
+	}
+
+	// Функция для выбора варианта из предложений
+	const handleSelectSuggestion = (suggestion: Suggestion) => {
+		const [longitude, latitude] = suggestion.coordinates
+		dispatch(setCoordinates({ latitude, longitude }))
+		form.setValue('location', suggestion.name)
+		setShowSuggestions(false)
 	}
 
 	return (
@@ -137,6 +151,22 @@ const FormMark = () => {
 									>
 										<FaSearchLocation />
 									</button>
+									{/* Выпадающий список предложений */}
+									{showSuggestions && suggestions.length > 0 && (
+										<div className='absolute z-10 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto'>
+											{suggestions.map(
+												(suggestion: Suggestion, index: number) => (
+													<div
+														key={index}
+														onClick={() => handleSelectSuggestion(suggestion)}
+														className='cursor-pointer p-2 hover:bg-gray-100'
+													>
+														{suggestion.name}
+													</div>
+												)
+											)}
+										</div>
+									)}
 								</div>
 							</FormControl>
 							<FormMessage />
