@@ -74,29 +74,40 @@ const YandexMap = () => {
 			if (window.myMap) {
 				window.myMap.geoObjects.removeAll()
 
-				markers.forEach(marker => {
-					if (
-						marker.coordinates &&
-						marker.coordinates.latitude !== null &&
-						marker.coordinates.longitude !== null
-					) {
-						const placemark = new window.ymaps.Placemark(
-							[marker.coordinates.latitude, marker.coordinates.longitude],
-							{ balloonContent: marker.description || '' },
-							{ preset: 'islands#icon', iconColor: '#0095b6' }
-						)
-
-						if (window.myMap) {
-							window.myMap.geoObjects.add(placemark)
+				const geoObjects = markers
+					.map(marker => {
+						if (
+							marker.coordinates &&
+							marker.coordinates.latitude !== null &&
+							marker.coordinates.longitude !== null
+						) {
+							return new window.ymaps.Placemark(
+								[marker.coordinates.latitude, marker.coordinates.longitude],
+								{ balloonContent: marker.description || '' },
+								{ preset: 'islands#icon', iconColor: '#0095b6' }
+							)
 						} else {
 							console.error(
-								'Карта не инициализирована, не удается добавить метку.'
+								'Некорректные координаты метки:',
+								marker.coordinates
 							)
+							return null
 						}
-					} else {
-						console.error('Некорректные координаты метки:', marker.coordinates)
-					}
+					})
+					.filter(Boolean)
+
+				// Создание кластеризатора
+				const clusterer = new window.ymaps.Clusterer({
+					preset: 'islands#invertedVioletClusterIcons',
+					groupByCoordinates: false,
+					zoomMargin: 30
 				})
+
+				// Добавление меток в кластеризатор
+				clusterer.add(geoObjects)
+
+				// Добавление кластеризатора на карту
+				window.myMap.geoObjects.add(clusterer)
 			}
 		}
 
