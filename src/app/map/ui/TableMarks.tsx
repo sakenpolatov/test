@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef } from 'react'
+import React, { memo, useEffect } from 'react'
 import {
 	Table,
 	TableHeader,
@@ -33,7 +33,7 @@ import { usePagination } from '@/hooks/usePagination'
 import { initialItemsPerPage } from '@/constants/variables'
 import { anchorToMap } from '@/utils/anchorToMap'
 
-const TableMarks = () => {
+const TableMarks = memo(() => {
 	const dispatch = useAppDispatch()
 	const markers = useAppSelector(state => state.marks.markers)
 
@@ -160,6 +160,6 @@ const TableMarks = () => {
 			)}
 		</>
 	)
-}
+})
 
-export default memo(TableMarks)
+export default TableMarks

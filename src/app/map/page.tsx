@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Provider } from 'react-redux'
-import FormMark from './ui/FormMark'
+import FormMark from './ui/FormMark/FormMark'
 import YandexMap from './ui/YandexMap'
 import TableMarks from './ui/TableMarks'
 import { useSession } from 'next-auth/react'
