@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { toast } from 'sonner' 
-import { GeoObject, Suggestion } from '@@/types/types'
+import { toast } from 'sonner'
+import { GeoObject, Suggestion, GeocoderResponse } from '@@/types/types'
 
 export const useLocationSuggestions = () => {
 	const [suggestions, setSuggestions] = useState<Suggestion[]>([])
@@ -33,18 +33,17 @@ export const useLocationSuggestions = () => {
 
 		try {
 			const res = await fetch(geocoderUrl)
-			const data = await res.json()
+			const data: GeocoderResponse = await res.json()
 
 			const results: GeoObject[] =
 				data.response.GeoObjectCollection.featureMember.map(
-					(item: any) => item.GeoObject
+					item => item.GeoObject
 				)
 
 			if (!results || results.length === 0) {
 				toast.error('Не найдено местоположение для указанного адреса')
 				return
 			}
-
 			const suggestionsList: Suggestion[] = results.map(result => ({
 				name: result.name,
 				coordinates: result.Point.pos.split(' ').map(Number) as [number, number]

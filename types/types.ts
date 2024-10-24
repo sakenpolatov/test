@@ -23,13 +23,21 @@ export interface IFormData {
 }
 
 export interface GeoObject {
-	Point: any
-	name: any
-	GeoObject: {
-		name: string
-		Point: {
-			pos: string
-		}
+	Point: {
+		pos: string // Координаты в строковом формате
+	}
+	name: string // Имя места
+}
+
+export interface GeoObjectCollection {
+	featureMember: {
+		GeoObject: GeoObject
+	}[]
+}
+
+export interface GeocoderResponse {
+	response: {
+		GeoObjectCollection: GeoObjectCollection
 	}
 }
 
