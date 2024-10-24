@@ -18,7 +18,7 @@ const YandexMap = () => {
 								: [55.751574, 37.573856]
 						window.myMap = new window.ymaps.Map('map', {
 							center: centerCoordinates,
-							zoom: 9,
+							zoom: 11,
 							controls: ['zoomControl', 'geolocationControl']
 						})
 					}
@@ -61,7 +61,7 @@ const YandexMap = () => {
 			) {
 				window.myMap.setCenter(
 					[currentCoordinates.latitude, currentCoordinates.longitude],
-					15
+					18
 				)
 			} else {
 				console.error('Некорректные текущие координаты:', currentCoordinates)
