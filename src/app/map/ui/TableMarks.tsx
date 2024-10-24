@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import {
 	Table,
 	TableHeader,
@@ -13,10 +13,19 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { deleteMark, fetchMarks } from '@/redux/asyncActions/marksActions'
 import { setCurrentCoordinates } from '@/redux/slices/marksSlice'
 import { ICoordinates } from '@@/types/types'
+import {
+	Select,
+	SelectTrigger,
+	SelectValue,
+	SelectContent,
+	SelectItem
+} from '@/components/ui/select'
 
 const TableMarks = () => {
 	const dispatch = useAppDispatch()
 	const markers = useAppSelector(state => state.marks.markers)
+
+	const [itemsPerPage, setItemsPerPage] = useState(5)
 
 	useEffect(() => {
 		dispatch(fetchMarks())
@@ -29,6 +38,8 @@ const TableMarks = () => {
 			console.error('Координаты не указаны для этой метки.')
 		}
 	}
+
+	const visibleMarkers = markers.slice(0, itemsPerPage)
 
 	return (
 		<>
@@ -54,17 +65,29 @@ const TableMarks = () => {
 								<TableHead className='bg-gray-500 text-gray-700 w-4/12 border border-black text-center'>
 									Координаты
 								</TableHead>
-								<TableHead className='bg-gray-500 text-gray-700 w-1/12 border border-black text-center'>
-									Удалить
+								<TableHead className='bg-gray-500 text-gray-700 w-4/12 border border-black text-center'>
+									<Select
+										onValueChange={value => setItemsPerPage(Number(value))}
+									>
+										<SelectTrigger className='w-[100px] text-black'>
+											<SelectValue placeholder='Количество' />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value='5'>5</SelectItem>
+											<SelectItem value='10'>10</SelectItem>
+											<SelectItem value='20'>20</SelectItem>
+											<SelectItem value='50'>50</SelectItem>
+										</SelectContent>
+									</Select>
 								</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{markers.map(item => (
+							{visibleMarkers.map(item => (
 								<TableRow
 									key={item._id}
 									className='hover:bg-transparent cursor-pointer'
-									onClick={() => handleRowClick(item.coordinates)} // Добавляем клик по строке
+									onClick={() => handleRowClick(item.coordinates)}
 								>
 									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.type}
@@ -86,7 +109,7 @@ const TableMarks = () => {
 									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										<button
 											onClick={e => {
-												e.stopPropagation() // Остановить клик по строке при удалении
+												e.stopPropagation()
 												dispatch(deleteMark(item._id))
 											}}
 											className='text-gray-500 hover:text-white'
