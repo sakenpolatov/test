@@ -26,10 +26,9 @@ export const useLocationSuggestions = () => {
 
 	const handleSearch = async (location: string) => {
 		if (!location) return
-		const apiKey = process.env.NEXT_PUBLIC_YANDEX_API_KEY
 
 		const bbox = '36.763,55.917~38.223,55.317'
-		const geocoderUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=${apiKey}&format=json&geocode=${encodeURIComponent(
+		const geocoderUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=df6f472b-6669-41b7-ab25-03e411ba22f4&format=json&geocode=${encodeURIComponent(
 			location
 		)}&bbox=${bbox}&rspn=1`
 
