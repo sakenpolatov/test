@@ -7,19 +7,15 @@ import {
 	TableHead,
 	TableCell
 } from '@/components/ui/table'
-import {
-	Pagination,
-	PaginationContent,
-	PaginationItem,
-	PaginationLink,
-	PaginationPrevious,
-	PaginationNext
-} from '@/components/ui/pagination'
 import { MdDeleteForever } from 'react-icons/md'
 import NoMarkers from './NoMarkers'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-
 import { deleteMark, fetchMarks } from '@/redux/asyncActions/marksActions'
+import {
+	setCoordinates,
+	setCurrentCoordinates
+} from '@/redux/slices/marksSlice'
+import { ICoordinates } from '@@/types/types'
 
 const TableMarks = () => {
 	const dispatch = useAppDispatch()
@@ -28,6 +24,14 @@ const TableMarks = () => {
 	useEffect(() => {
 		dispatch(fetchMarks())
 	}, [dispatch])
+
+	const handleRowClick = (coordinates: ICoordinates) => {
+		if (coordinates && coordinates.latitude && coordinates.longitude) {
+			dispatch(setCurrentCoordinates(coordinates))
+		} else {
+			console.error('Координаты не указаны для этой метки.')
+		}
+	}
 
 	return (
 		<>
@@ -60,7 +64,11 @@ const TableMarks = () => {
 						</TableHeader>
 						<TableBody>
 							{markers.map(item => (
-								<TableRow key={item._id} className='hover:bg-transparent'>
+								<TableRow
+									key={item._id}
+									className='hover:bg-transparent cursor-pointer'
+									onClick={() => handleRowClick(item.coordinates)} // Добавляем клик по строке
+								>
 									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.type}
 									</TableCell>
@@ -80,7 +88,10 @@ const TableMarks = () => {
 									</TableCell>
 									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										<button
-											onClick={() => dispatch(deleteMark(item._id))}
+											onClick={e => {
+												e.stopPropagation() // Остановить клик по строке при удалении
+												dispatch(deleteMark(item._id))
+											}}
 											className='text-gray-500 hover:text-white'
 										>
 											<MdDeleteForever className='w-6 h-6' />
