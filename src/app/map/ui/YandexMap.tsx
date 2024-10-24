@@ -9,9 +9,12 @@ const YandexMap = () => {
 			window.ymaps.ready(() => {
 				try {
 					if (!window.myMap) {
-						const centerCoordinates = currentCoordinates
-							? [currentCoordinates.latitude, currentCoordinates.longitude]
-							: [55.751574, 37.573856]
+						const centerCoordinates =
+							currentCoordinates &&
+							currentCoordinates.latitude !== null &&
+							currentCoordinates.longitude !== null
+								? [currentCoordinates.latitude, currentCoordinates.longitude]
+								: [55.751574, 37.573856]
 						window.myMap = new window.ymaps.Map('map', {
 							center: centerCoordinates,
 							zoom: 9,
@@ -60,6 +63,8 @@ const YandexMap = () => {
 					[currentCoordinates.latitude, currentCoordinates.longitude],
 					15
 				)
+			} else {
+				console.error('Некорректные текущие координаты:', currentCoordinates)
 			}
 		}
 	}, [currentCoordinates])
@@ -70,7 +75,11 @@ const YandexMap = () => {
 				window.myMap.geoObjects.removeAll()
 
 				markers.forEach(marker => {
-					if (marker.coordinates) {
+					if (
+						marker.coordinates &&
+						marker.coordinates.latitude !== null &&
+						marker.coordinates.longitude !== null
+					) {
 						const placemark = new window.ymaps.Placemark(
 							[marker.coordinates.latitude, marker.coordinates.longitude],
 							{ balloonContent: marker.description || '' },
@@ -84,12 +93,18 @@ const YandexMap = () => {
 								'Карта не инициализирована, не удается добавить метку.'
 							)
 						}
+					} else {
+						console.error('Некорректные координаты метки:', marker.coordinates)
 					}
 				})
 			}
 		}
 
-		addPlacemarks()
+		if (markers && markers.length > 0) {
+			addPlacemarks()
+		} else {
+			console.warn('Метки отсутствуют или данные некорректны.')
+		}
 	}, [markers])
 
 	return (
