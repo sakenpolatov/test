@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react'
+import React, { memo, useEffect, useRef } from 'react'
 import {
 	Table,
 	TableHeader,
@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/pagination'
 import { usePagination } from '@/hooks/usePagination'
 import { initialItemsPerPage } from '@/constants/variables'
+import { anchorToMap } from '@/utils/anchorToMap'
 
 const TableMarks = () => {
 	const dispatch = useAppDispatch()
@@ -53,6 +54,7 @@ const TableMarks = () => {
 	const handleRowClick = (coordinates: ICoordinates) => {
 		if (coordinates && coordinates.latitude && coordinates.longitude) {
 			dispatch(setCurrentCoordinates(coordinates))
+			anchorToMap('map', 80)
 		} else {
 			console.error('Координаты не указаны для этой метки.')
 		}
