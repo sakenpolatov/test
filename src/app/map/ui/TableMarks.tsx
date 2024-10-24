@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useEffect } from 'react'
 import {
 	Table,
 	TableHeader,
@@ -21,11 +21,30 @@ import {
 	SelectItem
 } from '@/components/ui/select'
 
+import {
+	Pagination,
+	PaginationContent,
+	PaginationItem,
+	PaginationLink,
+	PaginationPrevious,
+	PaginationNext
+} from '@/components/ui/pagination'
+import { usePagination } from '@/hooks/usePagination'
+import { initialItemsPerPage } from '@/constants/variables'
+
 const TableMarks = () => {
 	const dispatch = useAppDispatch()
 	const markers = useAppSelector(state => state.marks.markers)
 
-	const [itemsPerPage, setItemsPerPage] = useState(5)
+	const {
+		currentPage,
+		totalPages,
+		setCurrentPage,
+		handleNextPage,
+		handlePreviousPage,
+		handleItemsPerPageChange,
+		visibleItems
+	} = usePagination(markers, initialItemsPerPage)
 
 	useEffect(() => {
 		dispatch(fetchMarks())
@@ -38,8 +57,6 @@ const TableMarks = () => {
 			console.error('Координаты не указаны для этой метки.')
 		}
 	}
-
-	const visibleMarkers = markers.slice(0, itemsPerPage)
 
 	return (
 		<>
@@ -66,11 +83,9 @@ const TableMarks = () => {
 									Координаты
 								</TableHead>
 								<TableHead className='bg-gray-500 text-gray-700 w-4/12 border border-black text-center'>
-									<Select
-										onValueChange={value => setItemsPerPage(Number(value))}
-									>
+									<Select onValueChange={handleItemsPerPageChange}>
 										<SelectTrigger className='w-[100px] text-black'>
-											<SelectValue placeholder='Количество' />
+											<SelectValue placeholder={initialItemsPerPage} />
 										</SelectTrigger>
 										<SelectContent>
 											<SelectItem value='5'>5</SelectItem>
@@ -83,7 +98,7 @@ const TableMarks = () => {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{visibleMarkers.map(item => (
+							{visibleItems.map(item => (
 								<TableRow
 									key={item._id}
 									className='hover:bg-transparent cursor-pointer'
@@ -121,6 +136,24 @@ const TableMarks = () => {
 							))}
 						</TableBody>
 					</Table>
+					{totalPages > 1 && (
+						<Pagination className='mt-4'>
+							<PaginationPrevious onClick={handlePreviousPage} />
+							<PaginationContent>
+								{Array.from({ length: totalPages }, (_, index) => (
+									<PaginationItem key={index}>
+										<PaginationLink
+											isActive={currentPage === index + 1}
+											onClick={() => setCurrentPage(index + 1)}
+										>
+											{index + 1}
+										</PaginationLink>
+									</PaginationItem>
+								))}
+							</PaginationContent>
+							<PaginationNext onClick={handleNextPage} />
+						</Pagination>
+					)}
 				</div>
 			)}
 		</>
