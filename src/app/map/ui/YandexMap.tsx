@@ -32,6 +32,7 @@ const YandexMap = () => {
 	}, [currentCoordinates])
 
 	useEffect(() => {
+		// Загрузка скрипта для Yandex Maps
 		const existingScript = document.querySelector(
 			'script[src*="api-maps.yandex.ru"]'
 		)
@@ -42,7 +43,20 @@ const YandexMap = () => {
 			document.body.appendChild(yandexMapScript)
 
 			yandexMapScript.onload = () => {
-				initializeMap()
+				// Загрузка скрипта для тепловой карты
+				const heatmapScript = document.createElement('script')
+				heatmapScript.src =
+					'https://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js'
+				heatmapScript.async = true
+				document.body.appendChild(heatmapScript)
+
+				heatmapScript.onload = () => {
+					initializeMap()
+				}
+
+				heatmapScript.onerror = () => {
+					console.error('Ошибка загрузки скрипта тепловой карты.')
+				}
 			}
 
 			yandexMapScript.onerror = () => {
@@ -108,6 +122,26 @@ const YandexMap = () => {
 
 				// Добавление кластеризатора на карту
 				window.myMap.geoObjects.add(clusterer)
+
+				// Создание тепловой карты
+				const heatmapData = markers
+					.filter(marker => marker.coordinates)
+					.map(marker => marker.coordinates)
+
+				if (heatmapData.length > 0) {
+					const heatmap = new window.ymaps.Heatmap(heatmapData, {
+						radius: 40,
+						opacity: 0.5,
+						gradient: {
+							0.1: 'rgba(128, 255, 0, 0.7)',
+							0.5: 'rgba(255, 255, 0, 0.8)',
+							1.0: 'rgba(234, 72, 58, 0.9)'
+						}
+					})
+
+					// Добавление тепловой карты на карту
+					heatmap.setMap(window.myMap)
+				}
 			}
 		}
 
@@ -118,12 +152,7 @@ const YandexMap = () => {
 		}
 	}, [markers])
 
-	return (
-		<div
-			id='map'
-			style={{ width: '100%', height: '500px', border: '4px solid #ffffff' }}
-		></div>
-	)
+	return <div id='map' className='w-full h-[500px] border-4 border-white'></div>
 }
 
 export default YandexMap
