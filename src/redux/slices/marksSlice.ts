@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { fetchMarks, deleteMark } from '../asyncActions/marksActions'
 
 interface MarksState {
-	marks: IMarker[]
+	markers: IMarker[]
 	loading: boolean
 	error: string | null
 	coordinates: ICoordinates | null
@@ -11,7 +11,7 @@ interface MarksState {
 }
 
 const initialState: MarksState = {
-	marks: [],
+	markers: [],
 	loading: false,
 	error: null,
 	coordinates: null,
@@ -23,7 +23,7 @@ const marksSlice = createSlice({
 	initialState,
 	reducers: {
 		setMarks: (state, action) => {
-			state.marks = action.payload
+			state.markers = action.payload
 		},
 		setCoordinates: (state, action) => {
 			state.coordinates = action.payload
@@ -41,7 +41,7 @@ const marksSlice = createSlice({
 			})
 			.addCase(fetchMarks.fulfilled, (state, action) => {
 				state.loading = false
-				state.marks = action.payload
+				state.markers = action.payload
 			})
 			.addCase(fetchMarks.rejected, (state, action) => {
 				state.loading = false
@@ -50,7 +50,7 @@ const marksSlice = createSlice({
 
 			// Удаление метки
 			.addCase(deleteMark.fulfilled, (state, action) => {
-				state.marks = state.marks.filter(
+				state.markers = state.markers.filter(
 					(mark: IMarker) => mark._id !== action.payload
 				)
 			})

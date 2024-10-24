@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { useAppSelector } from '@/redux/hooks'
 
 const YandexMap = () => {
-	const { marks, currentCoordinates } = useAppSelector(state => state.marks)
+	const { markers, currentCoordinates } = useAppSelector(state => state.marks)
 
 	const initializeMap = useCallback(() => {
 		if (window.ymaps) {
@@ -69,7 +69,7 @@ const YandexMap = () => {
 			if (window.myMap) {
 				window.myMap.geoObjects.removeAll()
 
-				marks.forEach(marker => {
+				markers.forEach(marker => {
 					if (marker.coordinates) {
 						const placemark = new window.ymaps.Placemark(
 							[marker.coordinates.latitude, marker.coordinates.longitude],
@@ -90,7 +90,7 @@ const YandexMap = () => {
 		}
 
 		addPlacemarks()
-	}, [marks])
+	}, [markers])
 
 	return (
 		<div

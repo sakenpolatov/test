@@ -23,7 +23,7 @@ import { deleteMark, fetchMarks } from '@/redux/asyncActions/marksActions'
 
 const TableMarks = () => {
 	const dispatch = useAppDispatch()
-	const markers = useAppSelector(state => state.marks.marks)
+	const markers = useAppSelector(state => state.marks.markers)
 
 	useEffect(() => {
 		dispatch(fetchMarks())
