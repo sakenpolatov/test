@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from 'react'
+import React, { memo, useEffect } from 'react'
 import {
 	Table,
 	TableHeader,
@@ -18,30 +18,12 @@ import {
 import { MdDeleteForever } from 'react-icons/md'
 import NoMarkers from './NoMarkers'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { handleDelete, setCurrentCoordinates } from '@/redux/slices/marksSlice'
-import { fetchMarks } from '@/redux/asyncActions/marksActions'
+
+import { deleteMark, fetchMarks } from '@/redux/asyncActions/marksActions'
 
 const TableMarks = () => {
 	const dispatch = useAppDispatch()
-	const marks = useAppSelector(state => state.marks.marks)
-	const [currentPage, setCurrentPage] = useState(1)
-	const itemsPerPage = 1
-
-	const indexOfLastItem = currentPage * itemsPerPage
-	const indexOfFirstItem = indexOfLastItem - itemsPerPage
-
-	const currentItems = useMemo(() => {
-		return marks.slice(indexOfFirstItem, indexOfLastItem)
-	}, [marks, currentPage])
-
-	const totalPages = Math.ceil(marks.length / itemsPerPage)
-
-	const handlePageChange = (page: number) => {
-		setCurrentPage(page)
-		if (marks[page - 1]) {
-			dispatch(setCurrentCoordinates(marks[page - 1].coordinates))
-		}
-	}
+	const markers = useAppSelector(state => state.marks.marks)
 
 	useEffect(() => {
 		dispatch(fetchMarks())
@@ -49,7 +31,7 @@ const TableMarks = () => {
 
 	return (
 		<>
-			{marks.length === 0 ? (
+			{markers.length === 0 ? (
 				<NoMarkers />
 			) : (
 				<div className='w-full overflow-x-auto max-w-4xl mx-auto border-2 border-gray-500 shadow-lg rounded-md'>
@@ -77,7 +59,7 @@ const TableMarks = () => {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{currentItems.map(item => (
+							{markers.map(item => (
 								<TableRow key={item._id} className='hover:bg-transparent'>
 									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.type}
@@ -98,7 +80,7 @@ const TableMarks = () => {
 									</TableCell>
 									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										<button
-											onClick={() => dispatch(handleDelete(item._id))}
+											onClick={() => dispatch(deleteMark(item._id))}
 											className='text-gray-500 hover:text-white'
 										>
 											<MdDeleteForever className='w-6 h-6' />
@@ -108,32 +90,6 @@ const TableMarks = () => {
 							))}
 						</TableBody>
 					</Table>
-					<Pagination className='mt-4'>
-						<PaginationPrevious
-							onClick={() =>
-								handlePageChange(currentPage > 1 ? currentPage - 1 : 1)
-							}
-						/>
-						<PaginationContent>
-							{Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-								<PaginationItem key={page}>
-									<PaginationLink
-										isActive={page === currentPage}
-										onClick={() => handlePageChange(page)}
-									>
-										{page}
-									</PaginationLink>
-								</PaginationItem>
-							))}
-						</PaginationContent>
-						<PaginationNext
-							onClick={() =>
-								handlePageChange(
-									currentPage < totalPages ? currentPage + 1 : totalPages
-								)
-							}
-						/>
-					</Pagination>
 				</div>
 			)}
 		</>

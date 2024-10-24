@@ -1,6 +1,6 @@
 import { ICoordinates, IMarker } from '@@/types/types'
 import { createSlice } from '@reduxjs/toolkit'
-import { fetchMarks } from '../asyncActions/marksActions'
+import { fetchMarks, deleteMark } from '../asyncActions/marksActions'
 
 interface MarksState {
 	marks: IMarker[]
@@ -25,11 +25,6 @@ const marksSlice = createSlice({
 		setMarks: (state, action) => {
 			state.marks = action.payload
 		},
-		handleDelete: (state, action) => {
-			state.marks = state.marks.filter(
-				(mark: IMarker) => mark._id !== action.payload
-			)
-		},
 		setCoordinates: (state, action) => {
 			state.coordinates = action.payload
 		},
@@ -39,6 +34,7 @@ const marksSlice = createSlice({
 	},
 	extraReducers: builder => {
 		builder
+			// Получение меток
 			.addCase(fetchMarks.pending, state => {
 				state.loading = true
 				state.error = null
@@ -51,9 +47,19 @@ const marksSlice = createSlice({
 				state.loading = false
 				state.error = action.error.message || 'Ошибка при загрузке меток'
 			})
+
+			// Удаление метки
+			.addCase(deleteMark.fulfilled, (state, action) => {
+				state.marks = state.marks.filter(
+					(mark: IMarker) => mark._id !== action.payload
+				)
+			})
+			.addCase(deleteMark.rejected, (state, action) => {
+				state.error = action.payload as string
+			})
 	}
 })
 
-export const { setMarks, handleDelete, setCoordinates, setCurrentCoordinates } =
+export const { setMarks, setCoordinates, setCurrentCoordinates } =
 	marksSlice.actions
 export default marksSlice.reducer

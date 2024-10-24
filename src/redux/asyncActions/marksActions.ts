@@ -12,3 +12,23 @@ export const fetchMarks = createAsyncThunk<IMarker[]>(
 		return data.markers
 	}
 )
+
+export const deleteMark = createAsyncThunk(
+	'marks/deleteMark',
+	async (id: string, { rejectWithValue }) => {
+		try {
+			const response = await fetch(`/api/markers/${id}`, {
+				method: 'DELETE'
+			})
+			if (!response.ok) {
+				throw new Error('Ошибка при удалении метки с сервера')
+			}
+			return id
+		} catch (error) {
+			if (error instanceof Error) {
+				return rejectWithValue(error.message)
+			}
+			return rejectWithValue('Произошла неизвестная ошибка')
+		}
+	}
+)
