@@ -2,7 +2,7 @@ import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 import { ThemeProvider } from '@@/components/ThemeProvider'
 import NavBar from '@/components/NavBar'
-import { SessionProvider } from 'next-auth/react'
+import ProviderWrapper from '@/components/ProviderWrapper'
 
 export const metadata = {
 	title: 'TelegramWebApp',
@@ -26,11 +26,11 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<SessionProvider>
+					<ProviderWrapper>
 						<NavBar />
 						{children}
 						<Toaster position='top-right' />
-					</SessionProvider>
+					</ProviderWrapper>
 				</ThemeProvider>
 			</body>
 		</html>

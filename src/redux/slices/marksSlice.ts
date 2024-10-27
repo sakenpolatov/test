@@ -8,6 +8,7 @@ interface MarksState {
 	error: string | null
 	coordinates: ICoordinates | null
 	currentCoordinates: ICoordinates | null
+	isMapInitialized: boolean
 }
 
 const initialState: MarksState = {
@@ -15,7 +16,8 @@ const initialState: MarksState = {
 	loading: false,
 	error: null,
 	coordinates: null,
-	currentCoordinates: null
+	currentCoordinates: null,
+	isMapInitialized: false
 }
 
 const marksSlice = createSlice({
@@ -27,6 +29,9 @@ const marksSlice = createSlice({
 		},
 		setCurrentCoordinates: (state, action) => {
 			state.currentCoordinates = action.payload
+		},
+		setMapInitialized: (state, action) => {
+			state.isMapInitialized = action.payload
 		}
 	},
 	extraReducers: builder => {
@@ -62,5 +67,6 @@ const marksSlice = createSlice({
 	}
 })
 
-export const { setCoordinates, setCurrentCoordinates } = marksSlice.actions
+export const { setCoordinates, setCurrentCoordinates, setMapInitialized } =
+	marksSlice.actions
 export default marksSlice.reducer

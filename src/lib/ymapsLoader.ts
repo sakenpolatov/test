@@ -6,14 +6,13 @@ export const loadYandexModules = (): Promise<any[]> => {
 
 		try {
 			window.ymaps.modules.require(
-				['Map', 'Placemark', 'Clusterer', 'Heatmap'],
+				['Map', 'Placemark', 'Clusterer'],
 				(
-					Map: ymaps.Map,
-					Placemark: ymaps.Placemark,
-					Clusterer: ymaps.Clusterer,
-					Heatmap: ymaps.Heatmap
+					Map: typeof window.ymaps.Map,
+					Placemark: typeof window.ymaps.Placemark,
+					Clusterer: typeof window.ymaps.Clusterer
 				) => {
-					resolve([Map, Placemark, Clusterer, Heatmap])
+					resolve([Map, Placemark, Clusterer])
 				},
 				(err: Error) => {
 					reject(new Error(`Failed to load Yandex modules: ${err.message}`))

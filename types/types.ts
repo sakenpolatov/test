@@ -24,9 +24,9 @@ export interface IFormData {
 
 export interface GeoObject {
 	Point: {
-		pos: string // Координаты в строковом формате
+		pos: string
 	}
-	name: string // Имя места
+	name: string
 }
 
 export interface GeoObjectCollection {
