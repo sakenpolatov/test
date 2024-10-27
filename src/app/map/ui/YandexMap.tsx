@@ -1,122 +1,174 @@
-import React, { useEffect, useCallback } from 'react'
-import { useAppSelector } from '@/redux/hooks'
+import React, { useEffect, useCallback, useRef } from 'react'
+import { useAppSelector, useAppDispatch } from '@/redux/hooks'
+import { loadYandexModules } from '@/lib/ymapsLoader'
+import { setMapInitialized } from '@/redux/slices/marksSlice'
+import { loadHeatmapModule } from '@/lib/loadHeatmapModule '
 
 const YandexMap = () => {
-	const { markers, currentCoordinates } = useAppSelector(state => state.marks)
+	const { markers, currentCoordinates, isMapInitialized, loading } =
+		useAppSelector(state => state.marks)
+	const dispatch = useAppDispatch()
 	const apiKey = process.env.NEXT_PUBLIC_YANDEX_API_KEY
+	const mapRef = useRef<ymaps.Map | null>(null)
+	const heatmapRef = useRef<ymaps.Heatmap | null>(null)
 
-	const initializeMap = useCallback(() => {
-		if (window.ymaps) {
-			window.ymaps.ready(() => {
-				try {
-					if (!window.myMap) {
-						const centerCoordinates =
-							currentCoordinates &&
-							currentCoordinates.latitude !== null &&
-							currentCoordinates.longitude !== null
-								? [currentCoordinates.latitude, currentCoordinates.longitude]
-								: [55.751574, 37.573856]
-						window.myMap = new window.ymaps.Map('map', {
-							center: centerCoordinates,
-							zoom: 9,
-							controls: ['zoomControl', 'geolocationControl']
-						})
-					}
-				} catch (error) {
-					console.error('Ошибка при инициализации карты:', error)
-				}
-			})
-		} else {
-			console.error('Yandex Maps API не загружен.')
+	const initializeMap = useCallback(async () => {
+		if (
+			!window.ymaps ||
+			!apiKey ||
+			loading ||
+			isMapInitialized ||
+			markers.length === 0
+		) {
+			console.log('Карта не будет инициализирована, пока метки не загружены.')
+			return
 		}
-	}, [currentCoordinates])
 
-	useEffect(() => {
-		const existingScript = document.querySelector(
-			'script[src*="api-maps.yandex.ru"]'
-		)
-		if (!existingScript) {
-			const yandexMapScript = document.createElement('script')
-			yandexMapScript.src = `https://api-maps.yandex.ru/2.1/?apikey=${apiKey}&lang=ru_RU`
-			yandexMapScript.async = true
-			document.body.appendChild(yandexMapScript)
+		console.log('Начата инициализация карты и тепловой карты.')
 
-			yandexMapScript.onload = () => {
-				initializeMap()
-			}
+		try {
+			const [Map, Placemark, Clusterer] = await loadYandexModules()
+			console.log('Модули Yandex Map загружены:', { Map, Placemark, Clusterer })
 
-			yandexMapScript.onerror = () => {
-				console.error('Ошибка загрузки Yandex Maps API.')
-			}
-		} else {
-			initializeMap()
-		}
-	}, [initializeMap])
+			const Heatmap = await loadHeatmapModule()
+			console.log('Модуль тепловой карты загружен:', Heatmap)
 
-	useEffect(() => {
-		if (window.myMap && currentCoordinates) {
-			if (
-				currentCoordinates.latitude !== null &&
-				currentCoordinates.longitude !== null
-			) {
-				window.myMap.setCenter(
-					[currentCoordinates.latitude, currentCoordinates.longitude],
-					18
-				)
-			} else {
-				console.error('Некорректные текущие координаты:', currentCoordinates)
-			}
-		}
-	}, [currentCoordinates])
+			if (!mapRef.current) {
+				const centerCoordinates =
+					currentCoordinates?.latitude && currentCoordinates?.longitude
+						? [currentCoordinates.latitude, currentCoordinates.longitude]
+						: [55.751574, 37.573856]
 
-	useEffect(() => {
-		const addPlacemarks = () => {
-			if (window.myMap) {
-				window.myMap.geoObjects.removeAll()
-
-				const geoObjects = markers
-					.map(marker => {
-						if (
-							marker.coordinates &&
-							marker.coordinates.latitude !== null &&
-							marker.coordinates.longitude !== null
-						) {
-							return new window.ymaps.Placemark(
-								[marker.coordinates.latitude, marker.coordinates.longitude],
-								{ balloonContent: marker.description || '' },
-								{ preset: 'islands#icon', iconColor: '#0095b6' }
-							)
-						} else {
-							console.error(
-								'Некорректные координаты метки:',
-								marker.coordinates
-							)
-							return null
-						}
-					})
-					.filter(Boolean)
-
-				// Создание кластеризатора
-				const clusterer = new window.ymaps.Clusterer({
-					preset: 'islands#invertedVioletClusterIcons',
-					groupByCoordinates: false,
-					zoomMargin: 30
+				mapRef.current = new Map('map', {
+					center: centerCoordinates,
+					zoom: 9,
+					controls: ['zoomControl', 'geolocationControl']
 				})
+				dispatch(setMapInitialized(true))
+				console.log(
+					'Карта успешно инициализирована с центром:',
+					centerCoordinates
+				)
+			}
 
-				// Добавление меток в кластеризатор
-				clusterer.add(geoObjects)
+			const addPlacemarksAndHeatmap = () => {
+				if (mapRef.current && mapRef.current.geoObjects) {
+					mapRef.current.geoObjects.removeAll()
+					console.log('Все существующие геообъекты удалены с карты.')
 
-				// Добавление кластеризатора на карту
-				window.myMap.geoObjects.add(clusterer)
+					const geoObjects = markers
+						.map(marker => {
+							if (
+								marker.coordinates?.latitude &&
+								marker.coordinates?.longitude
+							) {
+								return new Placemark(
+									[marker.coordinates.latitude, marker.coordinates.longitude],
+									{ balloonContent: marker.description || '' },
+									{ preset: 'islands#icon', iconColor: '#0095b6' }
+								)
+							}
+							return null
+						})
+						.filter(Boolean)
+
+					const clusterer = new Clusterer({
+						preset: 'islands#invertedVioletClusterIcons',
+						groupByCoordinates: false,
+						zoomMargin: 25
+					})
+
+					clusterer.add(geoObjects)
+					mapRef.current.geoObjects.add(clusterer)
+					console.log(
+						'Метки добавлены на карту и сгруппированы кластеризатором.'
+					)
+
+					const heatmapData = markers
+						.map(
+							marker =>
+								marker.coordinates && [
+									marker.coordinates.latitude,
+									marker.coordinates.longitude
+								]
+						)
+						.filter(Boolean) as [number, number][]
+
+					if (heatmapData.length > 0 && !heatmapRef.current) {
+						heatmapRef.current = new Heatmap(heatmapData, {
+							radius: 25,
+							opacity: 0.5,
+							gradient: {
+								0.1: 'rgba(0, 255, 0, 0.8)',
+								0.2: 'rgba(255, 255, 0, 0.8)',
+								0.5: 'rgba(255, 165, 0, 0.9)',
+								1.0: 'rgba(255, 0, 0, 1.0)'
+							}
+						})
+						if (heatmapRef.current && mapRef.current) {
+							heatmapRef.current.setMap(mapRef.current)
+							console.log('Тепловая карта успешно добавлена на карту.')
+						}
+					} else {
+						console.log(
+							'Данные для тепловой карты отсутствуют или карта уже инициализирована.'
+						)
+					}
+				}
+			}
+
+			addPlacemarksAndHeatmap()
+		} catch (error) {
+			console.error('Ошибка при инициализации карты или тепловой карты:', error)
+		}
+	}, [currentCoordinates, markers, apiKey, isMapInitialized, dispatch, loading])
+
+	useEffect(() => {
+		if (
+			mapRef.current &&
+			currentCoordinates &&
+			currentCoordinates.latitude &&
+			currentCoordinates.longitude
+		) {
+			mapRef.current.setCenter(
+				[currentCoordinates.latitude, currentCoordinates.longitude],
+				17
+			)
+			console.log('Карта центрирована на новые координаты:', currentCoordinates)
+		}
+	}, [currentCoordinates])
+
+	useEffect(() => {
+		const initializeScripts = async () => {
+			if (!isMapInitialized && markers.length > 0) {
+				console.log('Начата загрузка скриптов Yandex.Карт.')
+				const existingScript = document.querySelector(
+					'script[src*="api-maps.yandex.ru"]'
+				)
+				if (!existingScript) {
+					const yandexMapScript = document.createElement('script')
+					yandexMapScript.src = `https://api-maps.yandex.ru/2.1/?apikey=${apiKey}&lang=ru_RU`
+					yandexMapScript.async = true
+					document.body.appendChild(yandexMapScript)
+
+					yandexMapScript.onload = () => {
+						console.log('Скрипт Yandex Maps успешно загружен.')
+						const heatmapScript = document.createElement('script')
+						heatmapScript.src =
+							'https://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js'
+						heatmapScript.async = true
+						document.body.appendChild(heatmapScript)
+
+						heatmapScript.onload = initializeMap
+					}
+				} else {
+					console.log('Скрипт Yandex Maps уже загружен ранее.')
+					initializeMap()
+				}
 			}
 		}
-
-		if (markers && markers.length > 0) {
-			addPlacemarks()
-		} else {
-			console.warn('Метки отсутствуют или данные некорректны.')
-		}
-	}, [markers])
+		initializeScripts()
+	}, [initializeMap, isMapInitialized, apiKey, markers.length])
 
 	return (
 		<div
