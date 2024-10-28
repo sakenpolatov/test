@@ -1,4 +1,4 @@
-export const loadHeatmapModule = (): Promise<typeof window.ymaps.Heatmap> => {
+export const heatmapLoader = (): Promise<typeof window.ymaps.Heatmap> => {
 	return new Promise((resolve, reject) => {
 		if (!window.ymaps) {
 			return reject(new Error('Yandex Maps API is not loaded'))
