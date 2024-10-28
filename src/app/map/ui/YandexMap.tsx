@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useRef } from 'react'
 import { useAppSelector, useAppDispatch } from '@/redux/hooks'
 import { loadYandexModules } from '@/lib/ymapsLoader'
 import { setMapInitialized } from '@/redux/slices/marksSlice'
-import { loadHeatmapModule } from '@/lib/loadHeatmapModule '
+import { heatmapLoader } from '@/lib/heatmapLoader'
 
 const YandexMap = () => {
 	const { markers, currentCoordinates, isMapInitialized, loading } =
@@ -30,7 +30,7 @@ const YandexMap = () => {
 			const [Map, Placemark, Clusterer] = await loadYandexModules()
 			console.log('Модули Yandex Map загружены:', { Map, Placemark, Clusterer })
 
-			const Heatmap = await loadHeatmapModule()
+			const Heatmap = await heatmapLoader()
 			console.log('Модуль тепловой карты загружен:', Heatmap)
 
 			if (!mapRef.current) {
