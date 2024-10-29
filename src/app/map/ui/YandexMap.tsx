@@ -168,14 +168,12 @@ const YandexMap = () => {
 			}
 		}
 		initializeScripts()
+		return () => {
+			dispatch(setMapInitialized(false))
+		}
 	}, [initializeMap, isMapInitialized, apiKey, markers.length])
 
-	return (
-		<div
-			id='map'
-			style={{ width: '100%', height: '500px', border: '4px solid #ffffff' }}
-		></div>
-	)
+	return <div id='map' className='w-full h-[500px] border-4 border-white'></div>
 }
 
 export default YandexMap
