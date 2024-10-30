@@ -4,10 +4,7 @@ export interface IMarker {
 	address: string
 	label: string
 	description: string
-	coordinates: {
-		latitude: number
-		longitude: number
-	}
+	coordinates: ICoordinates
 }
 
 export interface ICoordinates {
@@ -20,6 +17,7 @@ export interface IFormData {
 	location: string
 	source: string
 	comment: string
+	coordinates: ICoordinates
 }
 
 export interface GeoObject {
