@@ -40,29 +40,31 @@ const YandexMap = () => {
 	console.log('Уровень зума:', zoom)
 
 	return (
-		<YMaps query={{ apikey: apiKey }}>
-			<Map
-				key={`${mapCenter[0]}-${mapCenter[1]}`}
-				state={{ center: mapCenter, zoom }}
-				width='100%'
-				height='500px'
-			>
-				<Clusterer>
-					{markers.map(marker => (
-						<Placemark
-							key={marker._id}
-							geometry={[
-								marker.coordinates.latitude,
-								marker.coordinates.longitude
-							]}
-							properties={{
-								balloonContent: marker.label
-							}}
-						/>
-					))}
-				</Clusterer>
-			</Map>
-		</YMaps>
+		<div className='w-full max-w-4xl mx-auto'>
+			<YMaps query={{ apikey: apiKey }}>
+				<Map
+					key={`${mapCenter[0]}-${mapCenter[1]}`}
+					state={{ center: mapCenter, zoom }}
+					width='100%'
+					height='500px'
+				>
+					<Clusterer>
+						{markers.map(marker => (
+							<Placemark
+								key={marker._id}
+								geometry={[
+									marker.coordinates.latitude,
+									marker.coordinates.longitude
+								]}
+								properties={{
+									balloonContent: marker.label
+								}}
+							/>
+						))}
+					</Clusterer>
+				</Map>
+			</YMaps>
+		</div>
 	)
 }
 
