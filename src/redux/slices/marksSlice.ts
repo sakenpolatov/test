@@ -9,6 +9,8 @@ interface MarksState {
 	coordinates: ICoordinates | null
 	currentCoordinates: ICoordinates | null
 	isMapInitialized: boolean
+	zoom: number
+	mapCenter: [number, number] | null
 }
 
 const initialState: MarksState = {
@@ -17,7 +19,9 @@ const initialState: MarksState = {
 	error: null,
 	coordinates: null,
 	currentCoordinates: null,
-	isMapInitialized: false
+	isMapInitialized: false,
+	zoom: 9,
+	mapCenter: null
 }
 
 const marksSlice = createSlice({
@@ -29,9 +33,16 @@ const marksSlice = createSlice({
 		},
 		setCurrentCoordinates: (state, action) => {
 			state.currentCoordinates = action.payload
+			state.mapCenter = action.payload
 		},
 		setMapInitialized: (state, action) => {
 			state.isMapInitialized = action.payload
+		},
+		setZoom: (state, action) => {
+			state.zoom = action.payload
+		},
+		setMapCenter: (state, action) => {
+			state.mapCenter = action.payload
 		}
 	},
 	extraReducers: builder => {
@@ -49,12 +60,10 @@ const marksSlice = createSlice({
 				state.loading = false
 				state.error = action.error.message || 'Ошибка при загрузке меток'
 			})
-
 			// Добавление метки
 			.addCase(addMark.fulfilled, (state, action) => {
 				state.markers.push(action.payload)
 			})
-
 			// Удаление метки
 			.addCase(deleteMark.fulfilled, (state, action) => {
 				state.markers = state.markers.filter(
@@ -67,6 +76,11 @@ const marksSlice = createSlice({
 	}
 })
 
-export const { setCoordinates, setCurrentCoordinates, setMapInitialized } =
-	marksSlice.actions
+export const {
+	setCoordinates,
+	setCurrentCoordinates,
+	setMapInitialized,
+	setZoom,
+	setMapCenter
+} = marksSlice.actions
 export default marksSlice.reducer

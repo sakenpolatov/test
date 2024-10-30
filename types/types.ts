@@ -45,3 +45,5 @@ export interface Suggestion {
 	name: string
 	coordinates: [number, number]
 }
+
+export type initialCoordinates = [number, number] | null
