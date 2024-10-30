@@ -1,4 +1,13 @@
-import { YMaps, Map, Placemark, Clusterer } from '@pbe/react-yandex-maps'
+import {
+	YMaps,
+	Map,
+	Placemark,
+	Clusterer,
+	SearchControl,
+	FullscreenControl,
+	GeolocationControl,
+	ZoomControl
+} from '@pbe/react-yandex-maps'
 import React from 'react'
 import { useAppSelector } from '@/redux/hooks'
 import { initialCoordinates } from '@/constants/variables'
@@ -19,7 +28,13 @@ const YandexMap = () => {
 					state={{ center: mapCenter, zoom }}
 					width='100%'
 					height='500px'
+					controls={[]}
 				>
+					<FullscreenControl options={{ float: 'right' }} />
+					<GeolocationControl options={{ float: 'left' }} />
+					<SearchControl options={{ float: 'left' }} />
+					<ZoomControl options={{ position: { left: 10, top: 100 } }} />
+
 					<Clusterer>
 						{markers.map(marker => (
 							<Placemark
