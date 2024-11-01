@@ -32,7 +32,7 @@ const CustomPlacemark: FC<CustomPlacemarkProps> = memo(
 				}}
 				options={{
 					iconLayout: 'default#image',
-					iconImageHref: isHovered ? '/redmark.svg' : '/bluemark.svg', // Используйте разные иконки в зависимости от состояния
+					iconImageHref: isHovered ? '/redmark.svg' : '/bluemark.svg',
 					iconImageSize: [30, 30],
 					iconImageOffset: [-15, -30]
 				}}

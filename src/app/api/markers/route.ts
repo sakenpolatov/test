@@ -4,7 +4,8 @@ import Marker from '@@/models/MarkerModel'
 import UserModel from '@@/models/UserModel'
 import { auth } from '@@/lib/auth'
 
-// POST: Добавление новой метки
+//Добавление новой метки
+
 export async function POST(req: Request) {
 	try {
 		await dbConnect()
@@ -18,9 +19,9 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json()
-		const { type, location, source, comment, coordinates } = body
+		const { type, address, source, comment, coordinates } = body
 
-		if (!type || !location || !source || !coordinates) {
+		if (!type || !address || !source || !coordinates) {
 			return NextResponse.json(
 				{ message: 'Все поля обязательны' },
 				{ status: 400 }
@@ -28,7 +29,6 @@ export async function POST(req: Request) {
 		}
 
 		const user = await UserModel.findById(session.user.id)
-
 		if (!user) {
 			return NextResponse.json(
 				{ message: 'Пользователь не найден' },
@@ -36,11 +36,10 @@ export async function POST(req: Request) {
 			)
 		}
 
-		// Создаем новую метку с координатами
 		const newMarker = await Marker.create({
 			user: user._id,
 			type,
-			address: location,
+			address,
 			label: source,
 			description: comment,
 			coordinates: {
@@ -57,15 +56,18 @@ export async function POST(req: Request) {
 			{ status: 201 }
 		)
 	} catch (error) {
-		console.error(error)
+		console.error('Ошибка при добавлении метки:', error)
 		return NextResponse.json(
-			{ message: 'Ошибка при добавлении метки', error },
+			{
+				message: 'Ошибка при добавлении метки',
+				error: (error as { message?: string }).message || 'Неизвестная ошибка'
+			},
 			{ status: 500 }
 		)
 	}
 }
 
-// GET: Получение всех меток
+//Получение всех меток
 export async function GET() {
 	try {
 		await dbConnect()

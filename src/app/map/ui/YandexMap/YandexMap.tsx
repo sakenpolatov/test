@@ -9,19 +9,26 @@ import {
 	ZoomControl,
 	Button
 } from '@pbe/react-yandex-maps'
-import { useFetchMarksQuery, useUpdateMarkMutation } from '@/redux/api/marksApi'
+import {
+	useFetchMarksQuery,
+	useUpdateMarkMutation,
+	useAddMarkMutation
+} from '@/redux/api/marksApi'
 import EditMarkerModal from './EditMarkerModal'
 import CustomPlacemark from './CustomPlacemark'
 import { IMarker } from '@@/types/types'
 import { useAppSelector } from '@/redux/hooks'
+import { handleMapClick } from './mapHandlers'
 
 const YandexMap: FC = () => {
 	const apiKey = process.env.NEXT_PUBLIC_YANDEX_API_KEY
 	const { data: markers = [], isLoading } = useFetchMarksQuery()
 	const [updateMark] = useUpdateMarkMutation()
+	const [addMark] = useAddMarkMutation()
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedMarker, setSelectedMarker] = useState<IMarker | null>(null)
 	const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null)
+	const [isAddingMarker, setIsAddingMarker] = useState(false)
 	const mapCenter = useAppSelector(state => state.marks.mapCenter) || [
 		55.751244, 37.618423
 	]
@@ -58,15 +65,24 @@ const YandexMap: FC = () => {
 				</div>
 			) : (
 				<YMaps query={{ apikey: apiKey }}>
-					<Map state={{ center: mapCenter, zoom }} width='100%' height='500px'>
+					<Map
+						key={`${mapCenter[0]}-${mapCenter[1]}`}
+						state={{ center: mapCenter, zoom }}
+						width='100%'
+						height='500px'
+						onClick={(event: any) =>
+							handleMapClick(event, isAddingMarker, addMark)
+						}
+					>
 						<FullscreenControl options={{ float: 'right' }} />
 						<GeolocationControl options={{ float: 'left' }} />
 						<SearchControl options={{ float: 'left' }} />
 						<ZoomControl options={{ position: { left: 10, top: 100 } }} />
 						<Button
 							options={{ maxWidth: 128 }}
-							data={{ content: 'Добавить метку' }}
-							onClick={() => alert('Добавление метки')}
+							data={{ content: isAddingMarker ? 'Отменить' : 'Добавить метку' }}
+							defaultState={{ selected: isAddingMarker }}
+							onClick={() => setIsAddingMarker(prev => !prev)}
 						/>
 						<Clusterer>
 							{markers.map(marker => (
