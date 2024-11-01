@@ -11,7 +11,7 @@ export const handleMapClick = async (
 		const coords = event.get('coords')
 		const newMarker: IFormData = {
 			type: 'default',
-			location: 'Новая метка',
+			address: 'Новая метка',
 			source: 'Метрика',
 			comment: 'Описание метки',
 			coordinates: {

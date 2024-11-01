@@ -8,7 +8,7 @@ import {
 	TableCell
 } from '@/components/ui/table'
 import { MdDeleteForever } from 'react-icons/md'
-import NoMarkers from './NoMarkers'
+
 import { useAppDispatch } from '@/redux/hooks'
 import {
 	setCurrentCoordinates,
@@ -36,6 +36,7 @@ import { initialItemsPerPage } from '@/constants/variables'
 import Loader from '@@/components/Loader/loader'
 import { anchorToMap } from '@/utils/anchorToMap'
 import { useFetchMarksQuery, useDeleteMarkMutation } from '@/redux/api/marksApi'
+import NoMarkers from '../NoMarkers'
 
 const TableMarks = memo(() => {
 	const dispatch = useAppDispatch()

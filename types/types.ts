@@ -14,7 +14,7 @@ export interface ICoordinates {
 
 export interface IFormData {
 	type: string
-	location: string
+	address: string
 	source: string
 	comment: string
 	coordinates: ICoordinates

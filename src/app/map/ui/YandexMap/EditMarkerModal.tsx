@@ -1,17 +1,13 @@
 import React from 'react'
-import { Modal, Button, TextInput, Group } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
+import { useForm } from 'react-hook-form'
+import { Modal, Button, TextInput, Textarea } from '@mantine/core'
+import { IMarker } from '@@/types/types'
 
 interface EditMarkerModalProps {
 	opened: boolean
 	onClose: () => void
-	markerData: {
-		address: string
-		label: string
-		description: string
-		type: string
-	}
-	onSave: (updatedData: any) => void
+	markerData: IMarker
+	onSave: (data: IMarker) => void
 }
 
 const EditMarkerModal: React.FC<EditMarkerModalProps> = ({
@@ -20,13 +16,12 @@ const EditMarkerModal: React.FC<EditMarkerModalProps> = ({
 	markerData,
 	onSave
 }) => {
-	const [address, setAddress] = React.useState(markerData.address)
-	const [label, setLabel] = React.useState(markerData.label)
-	const [description, setDescription] = React.useState(markerData.description)
-	const [type, setType] = React.useState(markerData.type)
+	const { register, handleSubmit } = useForm<IMarker>({
+		defaultValues: markerData
+	})
 
-	const handleSave = () => {
-		onSave({ address, label, description, type })
+	const onSubmit = (data: IMarker) => {
+		onSave(data)
 		onClose()
 	}
 
@@ -34,42 +29,50 @@ const EditMarkerModal: React.FC<EditMarkerModalProps> = ({
 		<Modal
 			opened={opened}
 			onClose={onClose}
-			title='Редактировать метку'
 			centered
+			size='md'
+			title='Редактировать метку'
+			overlayProps={{ opacity: 0.6, blur: 4 }}
+			withCloseButton
 		>
-			<TextInput
-				label='Адрес'
-				placeholder='Введите адрес'
-				value={address}
-				onChange={e => setAddress(e.currentTarget.value)}
-			/>
-			<TextInput
-				label='Источник информации'
-				placeholder='Введите источник'
-				value={label}
-				onChange={e => setLabel(e.currentTarget.value)}
-				mt='md'
-			/>
-			<TextInput
-				label='Описание'
-				placeholder='Введите описание'
-				value={description}
-				onChange={e => setDescription(e.currentTarget.value)}
-				mt='md'
-			/>
-			<TextInput
-				label='Тип'
-				placeholder='Введите тип метки'
-				value={type}
-				onChange={e => setType(e.currentTarget.value)}
-				mt='md'
-			/>
-			<Group justify='flex-end' mt='md'>
-				<Button onClick={onClose} variant='default'>
-					Отмена
-				</Button>
-				<Button onClick={handleSave}>Сохранить</Button>
-			</Group>
+			<form
+				onSubmit={handleSubmit(onSubmit)}
+				className='flex flex-col gap-4 p-4'
+			>
+				<TextInput
+					label='Тип'
+					placeholder='Введите тип метки'
+					{...register('type')}
+					required
+				/>
+				<TextInput
+					label='Адрес'
+					placeholder='Введите адрес'
+					{...register('address')}
+					required
+				/>
+				<TextInput
+					label='Источник информации'
+					placeholder='Введите источник'
+					{...register('label')}
+					required
+				/>
+				<Textarea
+					label='Описание'
+					placeholder='Введите описание'
+					{...register('description')}
+					minRows={3}
+					required
+				/>
+				<div className='flex justify-end gap-2 mt-4'>
+					<Button onClick={onClose} variant='outline' color='gray'>
+						Отмена
+					</Button>
+					<Button type='submit' color='blue'>
+						Сохранить
+					</Button>
+				</div>
+			</form>
 		</Modal>
 	)
 }

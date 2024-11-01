@@ -6,6 +6,7 @@ export const marksApi = createApi({
 	baseQuery: fetchBaseQuery({ baseUrl: '/api/' }),
 	tagTypes: ['Marker'],
 	endpoints: builder => ({
+		// Запрос для получения меток
 		fetchMarks: builder.query<IMarker[], void>({
 			query: () => 'markers',
 			transformResponse: (response: { markers: IMarker[] }) => response.markers,
@@ -36,9 +37,23 @@ export const marksApi = createApi({
 				body: markerData
 			}),
 			invalidatesTags: [{ type: 'Marker', id: 'LIST' }]
+		}),
+		// Мутация для обновления метки
+		updateMark: builder.mutation<IMarker, Partial<IMarker> & { id: string }>({
+			query: ({ id, ...data }) => ({
+				url: `markers/${id}`,
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: data
+			}),
+			invalidatesTags: (result, error, { id }) => [{ type: 'Marker', id }]
 		})
 	})
 })
 
-export const { useFetchMarksQuery, useDeleteMarkMutation, useAddMarkMutation } =
-	marksApi
+export const {
+	useFetchMarksQuery,
+	useDeleteMarkMutation,
+	useAddMarkMutation,
+	useUpdateMarkMutation
+} = marksApi

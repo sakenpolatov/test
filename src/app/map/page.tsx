@@ -3,10 +3,11 @@
 import React from 'react'
 
 import YandexMap from './ui/YandexMap/YandexMap'
-import TableMarks from './ui/TableMarks'
+
 import { useSession } from 'next-auth/react'
 import Unlogged from './ui/Unlogged'
 import Loader from '@@/components/Loader/loader'
+import TableMarks from './ui/TableMarks/TableMarks'
 
 const MapPage = () => {
 	const { data: session, status } = useSession()
