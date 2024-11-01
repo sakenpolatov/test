@@ -4,6 +4,7 @@ import Marker from '@@/models/MarkerModel'
 import UserModel from '@@/models/UserModel'
 import { auth } from '@@/lib/auth'
 
+// POST: Добавление новой метки
 export async function POST(req: Request) {
 	try {
 		await dbConnect()
@@ -17,10 +18,9 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json()
-		const { type, location, source, comment, coordinates } = body // Добавляем coordinates
+		const { type, location, source, comment, coordinates } = body
 
 		if (!type || !location || !source || !coordinates) {
-			// Проверяем наличие координат
 			return NextResponse.json(
 				{ message: 'Все поля обязательны' },
 				{ status: 400 }
@@ -65,13 +65,11 @@ export async function POST(req: Request) {
 	}
 }
 
-// GET: получение всех меток
+// GET: Получение всех меток
 export async function GET() {
 	try {
 		await dbConnect()
-
 		const markers = await Marker.find()
-
 		return NextResponse.json({ markers }, { status: 200 })
 	} catch (error) {
 		console.error(error)

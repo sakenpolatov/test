@@ -1,12 +1,11 @@
 import { IFormData, ICoordinates } from '@@/types/types'
 import { AppDispatch } from '@/redux/store'
-import { addMark } from '@/redux/asyncActions/marksActions'
 import { setMapCenter, setZoom } from '@/redux/slices/marksSlice'
 
-export const handleMapClick = (
+export const handleMapClick = async (
 	event: any,
 	isAddingMarker: boolean,
-	dispatch: AppDispatch
+	addMark: (marker: IFormData) => Promise<any>
 ) => {
 	if (isAddingMarker) {
 		const coords = event.get('coords')
@@ -21,7 +20,11 @@ export const handleMapClick = (
 			}
 		}
 
-		dispatch(addMark(newMarker))
+		try {
+			await addMark(newMarker)
+		} catch (error) {
+			console.error('Ошибка при добавлении метки:', error)
+		}
 	}
 }
 

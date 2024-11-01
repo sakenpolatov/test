@@ -1,14 +1,6 @@
 import React, { FC, memo } from 'react'
 import { Placemark } from '@pbe/react-yandex-maps'
-import { ICoordinates, IMarker } from '@@/types/types'
-
-interface CustomPlacemarkProps {
-	marker: IMarker
-	isHovered: boolean
-	onMouseEnter: () => void
-	onMouseLeave: () => void
-	onClick: (coordinates: ICoordinates) => void
-}
+import { CustomPlacemarkProps } from '@@/types/types'
 
 const areEqual = (
 	prevProps: CustomPlacemarkProps,
