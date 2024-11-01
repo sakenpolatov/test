@@ -2,8 +2,8 @@ import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 import NavBar from '@/components/NavBar'
 import ProviderWrapper from '@/components/ProviderWrapper'
-import { ColorSchemeScript, MantineProvider } from '@mantine/core'
 import '@mantine/core/styles.css'
+import MantineWrapper from '@/components/MantineWrapper'
 
 export const metadata = {
 	title: 'TelegramWebApp',
@@ -20,17 +20,15 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang='en'>
-			<head>
-				<ColorSchemeScript defaultColorScheme='auto' />
-			</head>
+			<head></head>
 			<body className='bg-gray-950 text-white'>
-				<MantineProvider>
+				<MantineWrapper>
 					<ProviderWrapper>
 						<NavBar />
 						{children}
 						<Toaster position='top-right' />
 					</ProviderWrapper>
-				</MantineProvider>
+				</MantineWrapper>
 			</body>
 		</html>
 	)
