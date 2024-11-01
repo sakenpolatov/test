@@ -30,32 +30,53 @@ const EditMarkerModal: React.FC<EditMarkerModalProps> = ({
 			opened={opened}
 			onClose={onClose}
 			centered
-			size='md'
+			size='sm'
 			title='Редактировать метку'
 			overlayProps={{ opacity: 0.6, blur: 4 }}
 			withCloseButton
+			styles={{
+				content: {
+					backgroundColor: '#f5f5f5', // Цвет фона только для содержимого модала
+					borderRadius: '8px' // Радиус скругления
+				},
+				header: {
+					backgroundColor: '#007bff'
+				},
+				title: {
+					color: '#333'
+				},
+				body: {
+					padding: '20px'
+				}
+			}}
 		>
-			<form
-				onSubmit={handleSubmit(onSubmit)}
-				className='flex flex-col gap-4 p-4'
-			>
+			<form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
 				<TextInput
 					label='Тип'
 					placeholder='Введите тип метки'
 					{...register('type')}
 					required
+					styles={{
+						label: { color: '#000' }
+					}}
 				/>
 				<TextInput
 					label='Адрес'
 					placeholder='Введите адрес'
 					{...register('address')}
 					required
+					styles={{
+						label: { color: '#000' }
+					}}
 				/>
 				<TextInput
 					label='Источник информации'
 					placeholder='Введите источник'
 					{...register('label')}
 					required
+					styles={{
+						label: { color: '#000' }
+					}}
 				/>
 				<Textarea
 					label='Описание'
@@ -63,6 +84,9 @@ const EditMarkerModal: React.FC<EditMarkerModalProps> = ({
 					{...register('description')}
 					minRows={3}
 					required
+					styles={{
+						label: { color: '#000' }
+					}}
 				/>
 				<div className='flex justify-end gap-2 mt-4'>
 					<Button onClick={onClose} variant='outline' color='gray'>
