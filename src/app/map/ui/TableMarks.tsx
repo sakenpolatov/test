@@ -96,19 +96,18 @@ const TableMarks = memo(() => {
 								<TableHead className='bg-gray-500 text-gray-700 w-3/12 border border-black text-center'>
 									Комментарии
 								</TableHead>
-								<TableHead className='bg-gray-500 text-gray-700 w-4/12 border border-black text-center'>
+								{/* <TableHead className='bg-gray-500 text-gray-700 w-4/12 border border-black text-center'>
 									Координаты
-								</TableHead>
+								</TableHead> */}
 								<TableHead className='bg-gray-500 text-gray-700 w-4/12 border border-black text-center'>
 									<Select onValueChange={handleItemsPerPageChange}>
 										<SelectTrigger className='w-[100px] text-black'>
 											<SelectValue placeholder={initialItemsPerPage} />
 										</SelectTrigger>
 										<SelectContent>
-											<SelectItem value='5'>5</SelectItem>
-											<SelectItem value='10'>10</SelectItem>
-											<SelectItem value='20'>20</SelectItem>
+											<SelectItem value='25'>25</SelectItem>
 											<SelectItem value='50'>50</SelectItem>
+											<SelectItem value='100'>100</SelectItem>
 										</SelectContent>
 									</Select>
 								</TableHead>
@@ -133,11 +132,11 @@ const TableMarks = memo(() => {
 									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.description}
 									</TableCell>
-									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
+									{/* <TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.coordinates
 											? `${item.coordinates.latitude}, ${item.coordinates.longitude}`
 											: 'Не указаны'}
-									</TableCell>
+									</TableCell> */}
 									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										<button
 											onClick={e => {
