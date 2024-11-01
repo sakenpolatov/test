@@ -1,7 +1,7 @@
+import React, { useState, FC } from 'react'
 import {
 	YMaps,
 	Map,
-	Placemark,
 	Clusterer,
 	SearchControl,
 	FullscreenControl,
@@ -9,13 +9,17 @@ import {
 	ZoomControl,
 	Button
 } from '@pbe/react-yandex-maps'
-import React, { useState } from 'react'
 import { useAppSelector, useAppDispatch } from '@/redux/hooks'
 import { initialCoordinates } from '@/constants/variables'
-import { addMark } from '@/redux/asyncActions/marksActions'
-import { IFormData } from '@@/types/types'
+import CustomPlacemark from './CustomPlacemark'
+import {
+	handleMapClick,
+	handleMarkerHoverToggle,
+	handlePlacemarkClick
+} from './mapHandlers'
+import { CustomMapMouseEvent } from '@@/types/types'
 
-const YandexMap = () => {
+const YandexMap: FC = () => {
 	const apiKey = process.env.NEXT_PUBLIC_YANDEX_API_KEY
 
 	const markers = useAppSelector(state => state.marks.markers)
@@ -25,39 +29,19 @@ const YandexMap = () => {
 
 	const dispatch = useAppDispatch()
 	const [isAddingMarker, setIsAddingMarker] = useState(false)
-
-	const handleAddMarkerMode = () => {
-		setIsAddingMarker(prev => !prev)
-	}
-
-	const handleMapClick = (event: any) => {
-		if (isAddingMarker) {
-			const coords = event.get('coords')
-			const newMarker: IFormData = {
-				type: 'default',
-				location: 'Новая метка',
-				source: 'Метрика',
-				comment: 'Описание метки',
-				coordinates: {
-					latitude: coords[0],
-					longitude: coords[1]
-				}
-			}
-
-			dispatch(addMark(newMarker))
-			setIsAddingMarker(false)
-		}
-	}
+	const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null)
 
 	return (
-		<div className='w-full max-w-4xl mx-auto'>
+		<div id='map' className='w-full max-w-4xl mx-auto'>
 			<YMaps query={{ apikey: apiKey }}>
 				<Map
 					key={`${mapCenter[0]}-${mapCenter[1]}`}
 					state={{ center: mapCenter, zoom }}
 					width='100%'
 					height='500px'
-					onClick={handleMapClick}
+					onClick={(event: CustomMapMouseEvent) =>
+						handleMapClick(event, isAddingMarker, dispatch)
+					}
 				>
 					<FullscreenControl options={{ float: 'right' }} />
 					<GeolocationControl options={{ float: 'left' }} />
@@ -67,19 +51,23 @@ const YandexMap = () => {
 						options={{ maxWidth: 128 }}
 						data={{ content: isAddingMarker ? 'Отменить' : 'Добавить метку' }}
 						defaultState={{ selected: isAddingMarker }}
-						onClick={handleAddMarkerMode}
+						onClick={() => setIsAddingMarker(prev => !prev)}
 					/>
 					<Clusterer>
 						{markers.map(marker => (
-							<Placemark
+							<CustomPlacemark
 								key={marker._id}
-								geometry={[
-									marker.coordinates.latitude,
-									marker.coordinates.longitude
-								]}
-								properties={{
-									balloonContent: marker.label
-								}}
+								marker={marker}
+								isHovered={hoveredMarkerId === marker._id}
+								onMouseEnter={() =>
+									handleMarkerHoverToggle(marker._id, setHoveredMarkerId)
+								}
+								onMouseLeave={() =>
+									handleMarkerHoverToggle(null, setHoveredMarkerId)
+								}
+								onClick={() =>
+									handlePlacemarkClick(marker.coordinates, dispatch)
+								}
 							/>
 						))}
 					</Clusterer>

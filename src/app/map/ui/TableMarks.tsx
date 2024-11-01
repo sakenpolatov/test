@@ -64,7 +64,7 @@ const TableMarks = memo(() => {
 		) {
 			dispatch(setCurrentCoordinates(coordinates))
 			dispatch(setMapCenter([coordinates.latitude, coordinates.longitude]))
-			dispatch(setZoom(16))
+			dispatch(setZoom(18))
 			anchorToMap('map', 80)
 		} else {
 			console.error('Координаты не указаны для этой метки.')

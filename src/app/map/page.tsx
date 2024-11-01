@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-import YandexMap from './ui/YandexMap'
+import YandexMap from './ui/YandexMap/YandexMap'
 import TableMarks from './ui/TableMarks'
 import { useSession } from 'next-auth/react'
 import Unlogged from './ui/Unlogged'

@@ -45,3 +45,15 @@ export interface Suggestion {
 }
 
 export type initialCoordinates = [number, number] | null
+
+export interface CustomPlacemarkProps {
+	marker: IMarker
+	isHovered: boolean
+	onMouseEnter: () => void
+	onMouseLeave: () => void
+	onClick: (coordinates: ICoordinates) => void
+}
+
+export interface CustomMapMouseEvent {
+	get: (key: string) => number[]
+}
