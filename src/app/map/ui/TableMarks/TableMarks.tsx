@@ -31,6 +31,7 @@ import { useFetchMarksQuery, useDeleteMarkMutation } from '@/redux/api/marksApi'
 import NoMarkers from '../NoMarkers'
 import { confirmDeleteMarker } from '@/utils/confirmDeleteMarker'
 import { handleRowClick } from '@/utils/handleRowClick'
+import { setHoveredMarkerId } from '@/redux/slices/hoverSlice'
 
 const TableMarks = memo(() => {
 	const dispatch = useAppDispatch()
@@ -52,7 +53,7 @@ const TableMarks = memo(() => {
 	}
 
 	return (
-		<div className='relative w-full overflow-x-auto max-w-4xl mx-auto border-2 border-gray-500 shadow-lg rounded-md'>
+		<div className='relative w-full overflow-x-auto max-w-[1030px] mx-auto border-2 border-gray-500 shadow-lg rounded-md'>
 			{isLoading ? (
 				<div className='flex justify-center items-center py-10'>
 					<Loader />
@@ -64,21 +65,21 @@ const TableMarks = memo(() => {
 					<Table className='min-w-full'>
 						<TableHeader>
 							<TableRow>
-								<TableHead className='bg-gray-500 text-gray-700 w-1/12 border border-black text-center'>
+								<TableHead className='bg-gray-500 text-gray-700 border border-black text-center w-[80px]'>
 									Тип
 								</TableHead>
-								<TableHead className='bg-gray-500 text-gray-700 w-4/12 border border-black text-center'>
+								<TableHead className='bg-gray-500 text-gray-700 border border-black text-center w-[200px]'>
 									Локация
 								</TableHead>
-								<TableHead className='bg-gray-500 text-gray-700 w-3/12 border border-black text-center'>
+								<TableHead className='bg-gray-500 text-gray-700 border border-black text-center w-[200px]'>
 									Источник информации
 								</TableHead>
-								<TableHead className='bg-gray-500 text-gray-700 w-3/12 border border-black text-center'>
+								<TableHead className='bg-gray-500 text-gray-700 border border-black text-center w-[200px]'>
 									Комментарии
 								</TableHead>
-								<TableHead className='bg-gray-500 text-gray-700 w-4/12 border border-black text-center'>
+								<TableHead className='bg-gray-500 text-gray-700 border border-black text-center w-[100px]'>
 									<Select onValueChange={handleItemsPerPageChange}>
-										<SelectTrigger className='w-[100px] text-black'>
+										<SelectTrigger className='w-full text-black'>
 											<SelectValue placeholder={initialItemsPerPage} />
 										</SelectTrigger>
 										<SelectContent>
@@ -97,19 +98,35 @@ const TableMarks = memo(() => {
 									className='hover:bg-transparent cursor-pointer'
 									onClick={() => handleRowClick(item.coordinates, dispatch)}
 								>
-									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
+									<TableCell
+										className='bg-gray-600 border border-black text-center overflow-hidden text-ellipsis whitespace-nowrap'
+										onMouseEnter={() => dispatch(setHoveredMarkerId(item._id))}
+										onMouseLeave={() => dispatch(setHoveredMarkerId(null))}
+									>
 										{item.type}
 									</TableCell>
-									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
+									<TableCell
+										className='bg-gray-600 border border-black text-center overflow-hidden text-ellipsis whitespace-nowrap'
+										onMouseEnter={() => dispatch(setHoveredMarkerId(item._id))}
+										onMouseLeave={() => dispatch(setHoveredMarkerId(null))}
+									>
 										{item.address}
 									</TableCell>
-									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
+									<TableCell
+										className='bg-gray-600 border border-black text-center overflow-hidden text-ellipsis whitespace-nowrap'
+										onMouseEnter={() => dispatch(setHoveredMarkerId(item._id))}
+										onMouseLeave={() => dispatch(setHoveredMarkerId(null))}
+									>
 										{item.label}
 									</TableCell>
-									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
+									<TableCell
+										className='bg-gray-600 border border-black text-center overflow-hidden text-ellipsis whitespace-nowrap'
+										onMouseEnter={() => dispatch(setHoveredMarkerId(item._id))}
+										onMouseLeave={() => dispatch(setHoveredMarkerId(null))}
+									>
 										{item.description}
 									</TableCell>
-									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
+									<TableCell className='bg-gray-600 border border-black text-center'>
 										<button
 											onClick={async e => {
 												e.stopPropagation()

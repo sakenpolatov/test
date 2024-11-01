@@ -17,8 +17,9 @@ import {
 import EditMarkerModal from './EditMarkerModal'
 import CustomPlacemark from './CustomPlacemark'
 import { IMarker } from '@@/types/types'
-import { useAppSelector } from '@/redux/hooks'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { handleMapClick } from './mapHandlers'
+import { setHoveredMarkerId } from '@/redux/slices/hoverSlice'
 
 const YandexMap: FC = () => {
 	const apiKey = process.env.NEXT_PUBLIC_YANDEX_API_KEY
@@ -27,12 +28,14 @@ const YandexMap: FC = () => {
 	const [addMark] = useAddMarkMutation()
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedMarker, setSelectedMarker] = useState<IMarker | null>(null)
-	const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null)
 	const [isAddingMarker, setIsAddingMarker] = useState(false)
 	const mapCenter = useAppSelector(state => state.marks.mapCenter) || [
 		55.751244, 37.618423
 	]
+	const hoveredMarkerId = useAppSelector(state => state.hover.hoveredMarkerId)
+
 	const zoom = useAppSelector(state => state.marks.zoom) || 10
+	const dispatch = useAppDispatch()
 
 	const openEditModal = (marker: IMarker) => {
 		setSelectedMarker(marker)
@@ -58,7 +61,7 @@ const YandexMap: FC = () => {
 	}
 
 	return (
-		<div id='map' className='w-full max-w-4xl mx-auto'>
+		<div id='map' className='w-full max-w-5xl mx-auto'>
 			{isLoading ? (
 				<div className='flex justify-center items-center h-96'>
 					<p>Загрузка меток...</p>
@@ -90,8 +93,8 @@ const YandexMap: FC = () => {
 									key={marker._id}
 									marker={marker}
 									isHovered={hoveredMarkerId === marker._id}
-									onMouseEnter={() => setHoveredMarkerId(marker._id)}
-									onMouseLeave={() => setHoveredMarkerId(null)}
+									onMouseEnter={() => dispatch(setHoveredMarkerId(marker._id))}
+									onMouseLeave={() => dispatch(setHoveredMarkerId(null))}
 									onClick={() => openEditModal(marker)}
 								/>
 							))}
