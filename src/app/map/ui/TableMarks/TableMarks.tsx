@@ -8,14 +8,7 @@ import {
 	TableCell
 } from '@/components/ui/table'
 import { MdDeleteForever } from 'react-icons/md'
-
 import { useAppDispatch } from '@/redux/hooks'
-import {
-	setCurrentCoordinates,
-	setMapCenter,
-	setZoom
-} from '@/redux/slices/marksSlice'
-import { ICoordinates } from '@@/types/types'
 import {
 	Select,
 	SelectTrigger,
@@ -34,9 +27,10 @@ import {
 import { usePagination } from '@/hooks/usePagination'
 import { initialItemsPerPage } from '@/constants/variables'
 import Loader from '@@/components/Loader/loader'
-import { anchorToMap } from '@/utils/anchorToMap'
 import { useFetchMarksQuery, useDeleteMarkMutation } from '@/redux/api/marksApi'
 import NoMarkers from '../NoMarkers'
+import { confirmDeleteMarker } from '@/utils/confirmDeleteMarker'
+import { handleRowClick } from '@/utils/handleRowClick'
 
 const TableMarks = memo(() => {
 	const dispatch = useAppDispatch()
@@ -52,21 +46,6 @@ const TableMarks = memo(() => {
 		handleItemsPerPageChange,
 		visibleItems
 	} = usePagination(markers, initialItemsPerPage)
-
-	const handleRowClick = (coordinates: ICoordinates) => {
-		if (
-			coordinates &&
-			coordinates.latitude !== null &&
-			coordinates.longitude !== null
-		) {
-			dispatch(setCurrentCoordinates(coordinates))
-			dispatch(setMapCenter([coordinates.latitude, coordinates.longitude]))
-			dispatch(setZoom(17))
-			anchorToMap('map', 80)
-		} else {
-			console.error('Координаты не указаны для этой метки.')
-		}
-	}
 
 	if (error) {
 		console.error('Ошибка при загрузке меток:', error)
@@ -116,7 +95,7 @@ const TableMarks = memo(() => {
 								<TableRow
 									key={item._id}
 									className='hover:bg-transparent cursor-pointer'
-									onClick={() => handleRowClick(item.coordinates)}
+									onClick={() => handleRowClick(item.coordinates, dispatch)}
 								>
 									<TableCell className='bg-gray-600 whitespace-nowrap border-black text-center'>
 										{item.type}
@@ -134,11 +113,7 @@ const TableMarks = memo(() => {
 										<button
 											onClick={async e => {
 												e.stopPropagation()
-												try {
-													await deleteMark(item._id)
-												} catch (error) {
-													console.error('Ошибка при удалении метки:', error)
-												}
+												confirmDeleteMarker(item._id, deleteMark)
 											}}
 											className='text-gray-500 hover:text-white'
 										>

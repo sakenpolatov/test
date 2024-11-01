@@ -21,6 +21,7 @@ const YandexMap: FC = () => {
 	const [updateMark] = useUpdateMarkMutation()
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedMarker, setSelectedMarker] = useState<IMarker | null>(null)
+	const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null)
 	const mapCenter = useAppSelector(state => state.marks.mapCenter) || [
 		55.751244, 37.618423
 	]
@@ -72,9 +73,9 @@ const YandexMap: FC = () => {
 								<CustomPlacemark
 									key={marker._id}
 									marker={marker}
-									isHovered={false}
-									onMouseEnter={() => {}}
-									onMouseLeave={() => {}}
+									isHovered={hoveredMarkerId === marker._id}
+									onMouseEnter={() => setHoveredMarkerId(marker._id)}
+									onMouseLeave={() => setHoveredMarkerId(null)}
 									onClick={() => openEditModal(marker)}
 								/>
 							))}
