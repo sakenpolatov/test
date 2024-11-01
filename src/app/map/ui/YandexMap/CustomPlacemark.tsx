@@ -1,6 +1,8 @@
 import React, { FC, memo } from 'react'
 import { Placemark } from '@pbe/react-yandex-maps'
 import { CustomPlacemarkProps } from '@@/types/types'
+import { handlePlacemarkClick } from './mapHandlers'
+import { useAppDispatch } from '@/redux/hooks'
 
 const areEqual = (
 	prevProps: CustomPlacemarkProps,
@@ -14,6 +16,13 @@ const areEqual = (
 
 const CustomPlacemark: FC<CustomPlacemarkProps> = memo(
 	({ marker, isHovered, onMouseEnter, onMouseLeave, onClick }) => {
+		const dispatch = useAppDispatch()
+
+		const handleRightClick = (event: React.MouseEvent) => {
+			event.preventDefault()
+			onClick(marker)
+		}
+
 		return (
 			<Placemark
 				key={marker._id}
@@ -29,7 +38,8 @@ const CustomPlacemark: FC<CustomPlacemarkProps> = memo(
 				}}
 				onMouseEnter={onMouseEnter}
 				onMouseLeave={onMouseLeave}
-				onClick={() => onClick(marker.coordinates)}
+				onClick={() => handlePlacemarkClick(marker.coordinates, dispatch)}
+				onContextMenu={handleRightClick}
 			/>
 		)
 	},

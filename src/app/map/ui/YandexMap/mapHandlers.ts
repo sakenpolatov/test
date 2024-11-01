@@ -41,6 +41,6 @@ export const handlePlacemarkClick = (
 ) => {
 	if (coordinates) {
 		dispatch(setMapCenter([coordinates.latitude, coordinates.longitude]))
-		dispatch(setZoom(18))
+		dispatch(setZoom(17))
 	}
 }

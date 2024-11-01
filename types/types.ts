@@ -51,7 +51,7 @@ export interface CustomPlacemarkProps {
 	isHovered: boolean
 	onMouseEnter: () => void
 	onMouseLeave: () => void
-	onClick: (coordinates: ICoordinates) => void
+	onClick: (marker: IMarker) => void
 }
 
 export interface CustomMapMouseEvent {

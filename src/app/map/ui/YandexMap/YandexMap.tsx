@@ -12,26 +12,38 @@ import {
 import { useAppSelector, useAppDispatch } from '@/redux/hooks'
 import { initialCoordinates } from '@/constants/variables'
 import CustomPlacemark from './CustomPlacemark'
-import {
-	handleMapClick,
-	handleMarkerHoverToggle,
-	handlePlacemarkClick
-} from './mapHandlers'
-import { CustomMapMouseEvent } from '@@/types/types'
+import EditMarkerModal from './EditMarkerModal'
+import { handleMapClick, handleMarkerHoverToggle } from './mapHandlers'
+import { CustomMapMouseEvent, IMarker } from '@@/types/types'
 import { useFetchMarksQuery, useAddMarkMutation } from '@/redux/api/marksApi'
 
 const YandexMap: FC = () => {
 	const apiKey = process.env.NEXT_PUBLIC_YANDEX_API_KEY
-
 	const { data: markers = [], isLoading } = useFetchMarksQuery()
 	const [addMark] = useAddMarkMutation()
 	const zoom = useAppSelector(state => state.marks.zoom)
 	const mapCenter =
 		useAppSelector(state => state.marks.mapCenter) || initialCoordinates
 
-	const dispatch = useAppDispatch()
 	const [isAddingMarker, setIsAddingMarker] = useState(false)
 	const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null)
+
+	const [isModalOpen, setIsModalOpen] = useState(false)
+	const [selectedMarker, setSelectedMarker] = useState<IMarker | null>(null)
+
+	const openEditModal = (marker: IMarker) => {
+		setSelectedMarker(marker)
+		setIsModalOpen(true)
+	}
+	const handleSave = (updatedData: IMarker) => {
+		console.log('Сохраненные данные метки:', updatedData)
+		closeEditModal()
+	}
+
+	const closeEditModal = () => {
+		setIsModalOpen(false)
+		setSelectedMarker(null)
+	}
 
 	return (
 		<div id='map' className='w-full max-w-4xl mx-auto'>
@@ -72,14 +84,21 @@ const YandexMap: FC = () => {
 									onMouseLeave={() =>
 										handleMarkerHoverToggle(null, setHoveredMarkerId)
 									}
-									onClick={() =>
-										handlePlacemarkClick(marker.coordinates, dispatch)
-									}
+									onClick={() => openEditModal(marker)}
 								/>
 							))}
 						</Clusterer>
 					</Map>
 				</YMaps>
+			)}
+
+			{selectedMarker && (
+				<EditMarkerModal
+					opened={isModalOpen}
+					onClose={closeEditModal}
+					markerData={selectedMarker}
+					onSave={handleSave}
+				/>
 			)}
 		</div>
 	)
