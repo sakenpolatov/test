@@ -33,8 +33,6 @@ export default function LoginForm() {
 			email: values.email,
 			password: values.password
 		})
-
-		// Проверка успешности логина
 		if (response?.error) {
 			toast.error('Неправильный email или пароль')
 			return

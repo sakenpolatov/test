@@ -12,9 +12,8 @@ const GoogleButton = () => {
 	return (
 		<Button
 			onClick={handleGoogleSignIn}
-			variant='outline'
 			size='lg'
-			className='flex items-center justify-between gap-2'
+			className='flex items-center justify-between gap-2 hover:bg-gray-500 rounded-full'
 		>
 			<Image
 				src='/google-logo.svg'
@@ -23,7 +22,7 @@ const GoogleButton = () => {
 				height={24}
 				className='mr-2'
 			/>
-			<p className='text-black dark:text-white'>Google</p>
+			<p className='text-white dark:text-white'>Google</p>
 		</Button>
 	)
 }
