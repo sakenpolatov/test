@@ -1,4 +1,3 @@
-import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 import NavBar from '@/components/NavBar'
 import ProviderWrapper from '@/components/ProviderWrapper'
@@ -26,7 +25,6 @@ export default function RootLayout({
 					<ProviderWrapper>
 						<NavBar />
 						{children}
-						<Toaster position='top-right' />
 					</ProviderWrapper>
 				</MantineWrapper>
 			</body>

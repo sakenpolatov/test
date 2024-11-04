@@ -12,7 +12,6 @@ import {
 	FormLabel,
 	FormMessage
 } from '@/components/ui/form'
-import { toast } from 'sonner'
 import { registerSchema } from '@/lib/schemas'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
@@ -33,7 +32,6 @@ export default function RegisterForm() {
 
 	const onSubmit = async (values: any) => {
 		if (Object.keys(form.formState.errors).length > 0) {
-			toast.error('Заполните все поля ввода')
 			return
 		}
 
@@ -45,13 +43,7 @@ export default function RegisterForm() {
 			body: JSON.stringify(values)
 		})
 
-		const data = await res.json()
-
-		if (res.status !== 201) {
-			toast.error(data.message)
-		} else {
-			toast.success('Вы успешно зарегистрировались')
-
+		if (res.status === 201) {
 			// После успешной регистрации войти в систему автоматически
 			const signInResponse = await signIn('credentials', {
 				redirect: false,
@@ -62,8 +54,6 @@ export default function RegisterForm() {
 			if (signInResponse?.ok) {
 				reloadSession()
 				router.push('/')
-			} else {
-				toast.error('Ошибка при входе после регистрации')
 			}
 		}
 	}

@@ -12,7 +12,6 @@ import {
 	FormLabel,
 	FormMessage
 } from '@/components/ui/form'
-import { toast } from 'sonner'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { loginSchema } from '@/lib/schemas'
@@ -33,14 +32,11 @@ export default function LoginForm() {
 			email: values.email,
 			password: values.password
 		})
-		if (response?.error) {
-			toast.error('Неправильный email или пароль')
-			return
-		}
 
-		toast.success('Вы вошли в систему')
-		router.push('/')
-		reloadSession()
+		if (!response?.error) {
+			router.push('/')
+			reloadSession()
+		}
 	}
 
 	return (

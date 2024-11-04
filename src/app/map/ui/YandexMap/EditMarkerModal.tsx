@@ -36,8 +36,8 @@ const EditMarkerModal: React.FC<EditMarkerModalProps> = ({
 			withCloseButton
 			styles={{
 				content: {
-					backgroundColor: '#f5f5f5', // Цвет фона только для содержимого модала
-					borderRadius: '8px' // Радиус скругления
+					backgroundColor: '#f5f5f5',
+					borderRadius: '8px'
 				},
 				header: {
 					backgroundColor: '#007bff'
