@@ -24,29 +24,26 @@ import {
 	PaginationPrevious,
 	PaginationNext
 } from '@/components/ui/pagination'
-import { usePagination } from '@/hooks/usePagination'
-import { initialItemsPerPage } from '@/constants/variables'
 import Loader from '@@/components/Loader/loader'
 import { useFetchMarksQuery, useDeleteMarkMutation } from '@/redux/api/marksApi'
 import NoMarkers from '../NoMarkers'
 import { confirmDeleteMarker } from '@/utils/confirmDeleteMarker'
 import { handleRowClick } from '@/utils/handleRowClick'
 import { setHoveredMarkerId } from '@/redux/slices/mapSlice'
+import { initialItemsPerPage } from '@/constants/variables'
 
 const TableMarks = memo(() => {
 	const dispatch = useAppDispatch()
-	const { data: markers = [], isLoading, error } = useFetchMarksQuery()
 	const [deleteMark] = useDeleteMarkMutation()
 
+	const [currentPage, setCurrentPage] = React.useState(1)
+	const [itemsPerPage, setItemsPerPage] = React.useState(initialItemsPerPage)
+
 	const {
-		currentPage,
-		totalPages,
-		setCurrentPage,
-		handleNextPage,
-		handlePreviousPage,
-		handleItemsPerPageChange,
-		visibleItems
-	} = usePagination(markers, initialItemsPerPage)
+		data: markersData = { markers: [], totalPages: 0 },
+		isLoading,
+		error
+	} = useFetchMarksQuery({ page: currentPage, limit: itemsPerPage })
 
 	if (error) {
 		console.error('Ошибка при загрузке меток:', error)
@@ -58,7 +55,7 @@ const TableMarks = memo(() => {
 				<div className='flex justify-center items-center py-10'>
 					<Loader />
 				</div>
-			) : markers.length === 0 ? (
+			) : markersData.markers.length === 0 ? (
 				<NoMarkers />
 			) : (
 				<>
@@ -78,9 +75,13 @@ const TableMarks = memo(() => {
 									Комментарии
 								</TableHead>
 								<TableHead className='bg-gray-500 text-gray-700 border border-black text-center w-[100px]'>
-									<Select onValueChange={handleItemsPerPageChange}>
+									<Select
+										onValueChange={value => setItemsPerPage(Number(value))}
+									>
 										<SelectTrigger className='w-full text-black'>
-											<SelectValue placeholder={initialItemsPerPage} />
+											<SelectValue
+												placeholder={initialItemsPerPage.toString()}
+											/>
 										</SelectTrigger>
 										<SelectContent>
 											<SelectItem value='25'>25</SelectItem>
@@ -92,7 +93,7 @@ const TableMarks = memo(() => {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{visibleItems.map(item => (
+							{markersData.markers.map(item => (
 								<TableRow
 									key={item._id}
 									className='hover:bg-transparent cursor-pointer'
@@ -141,11 +142,13 @@ const TableMarks = memo(() => {
 							))}
 						</TableBody>
 					</Table>
-					{totalPages > 1 && (
+					{markersData.totalPages > 1 && (
 						<Pagination className='mt-4'>
-							<PaginationPrevious onClick={handlePreviousPage} />
+							<PaginationPrevious
+								onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+							/>
 							<PaginationContent>
-								{Array.from({ length: totalPages }, (_, index) => (
+								{Array.from({ length: markersData.totalPages }, (_, index) => (
 									<PaginationItem key={index}>
 										<PaginationLink
 											isActive={currentPage === index + 1}
@@ -156,7 +159,13 @@ const TableMarks = memo(() => {
 									</PaginationItem>
 								))}
 							</PaginationContent>
-							<PaginationNext onClick={handleNextPage} />
+							<PaginationNext
+								onClick={() =>
+									setCurrentPage(prev =>
+										Math.min(prev + 1, markersData.totalPages)
+									)
+								}
+							/>
 						</Pagination>
 					)}
 				</>

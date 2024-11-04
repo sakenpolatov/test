@@ -67,7 +67,7 @@ export async function POST(req: Request) {
 }
 
 // Получение всех меток
-export async function GET() {
+export async function GET(req: Request) {
 	try {
 		await dbConnect()
 		const session = await auth()
@@ -77,8 +77,25 @@ export async function GET() {
 				{ status: 401 }
 			)
 		}
+
+		const { searchParams } = new URL(req.url)
+		const page = parseInt(searchParams.get('page') || '1', 10)
+		const limit = parseInt(searchParams.get('limit') || '10', 10)
+		const skip = (page - 1) * limit
+
 		const markers = await Marker.find({ user: session.user.id })
-		return NextResponse.json({ markers }, { status: 200 })
+			.skip(skip)
+			.limit(limit)
+
+		const totalMarkers = await Marker.countDocuments({ user: session.user.id })
+
+		return NextResponse.json(
+			{
+				markers,
+				totalPages: Math.ceil(totalMarkers / limit)
+			},
+			{ status: 200 }
+		)
 	} catch (error) {
 		console.error(error)
 		return NextResponse.json(

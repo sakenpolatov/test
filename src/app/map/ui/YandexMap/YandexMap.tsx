@@ -32,7 +32,13 @@ import { setHoveredMarkerId, setIsAddingMarker } from '@/redux/slices/mapSlice'
 
 const YandexMap = () => {
 	const apiKey = process.env.NEXT_PUBLIC_YANDEX_API_KEY
-	const { data: markers = [], isLoading } = useFetchMarksQuery()
+
+	const { currentPage, itemsPerPage } = useAppSelector(
+		state => state.pagination
+	)
+
+	const { data: markersData = { markers: [], totalPages: 0 }, isLoading } =
+		useFetchMarksQuery({ page: currentPage, limit: 1000 })
 	const [updateMark] = useUpdateMarkMutation()
 	const [addMark] = useAddMarkMutation()
 	const dispatch = useAppDispatch()
@@ -92,7 +98,7 @@ const YandexMap = () => {
 							onClick={() => dispatch(setIsAddingMarker(!isAddingMarker))}
 						/>
 						<Clusterer>
-							{markers.map(marker => (
+							{markersData.markers.map(marker => (
 								<CustomPlacemark
 									key={marker._id}
 									marker={marker}

@@ -6,14 +6,20 @@ export const marksApi = createApi({
 	baseQuery: fetchBaseQuery({ baseUrl: '/api/' }),
 	tagTypes: ['Marker'],
 	endpoints: builder => ({
-		// Запрос для получения меток
-		fetchMarks: builder.query<IMarker[], void>({
-			query: () => 'markers',
-			transformResponse: (response: { markers: IMarker[] }) => response.markers,
+		// Запрос для получения меток с пагинацией
+		fetchMarks: builder.query<
+			{ markers: IMarker[]; totalPages: number },
+			{ page: number; limit: number }
+		>({
+			query: ({ page, limit }) => `markers?page=${page}&limit=${limit}`,
+			transformResponse: (response: {
+				markers: IMarker[]
+				totalPages: number
+			}) => response,
 			providesTags: result =>
-				Array.isArray(result)
+				Array.isArray(result?.markers)
 					? [
-							...result.map(
+							...result.markers.map(
 								({ _id }) => ({ type: 'Marker', id: _id } as const)
 							),
 							{ type: 'Marker', id: 'LIST' }
