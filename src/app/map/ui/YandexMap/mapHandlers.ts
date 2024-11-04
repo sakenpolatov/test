@@ -1,6 +1,6 @@
 import { IFormData, ICoordinates } from '@@/types/types'
 import { AppDispatch } from '@/redux/store'
-import { setMapCenter, setZoom } from '@/redux/slices/marksSlice'
+import { setMapCenter, setZoom } from '@/redux/slices/mapSlice'
 
 export const handleMapClick = async (
 	event: any,

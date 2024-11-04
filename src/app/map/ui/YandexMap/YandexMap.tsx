@@ -19,12 +19,7 @@ import CustomPlacemark from './CustomPlacemark'
 import { IMarker } from '@@/types/types'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { handleMapClick } from './mapHandlers'
-import {
-	setHoveredMarkerId,
-	setIsModalOpen,
-	setSelectedMarker,
-	setIsAddingMarker
-} from '@/redux/slices/marksSlice'
+import { setIsModalOpen, setSelectedMarker } from '@/redux/slices/marksSlice'
 import {
 	ADD_MARKER,
 	CANCEL,
@@ -33,6 +28,7 @@ import {
 	LEFT,
 	RIGHT
 } from '@/constants/variables'
+import { setHoveredMarkerId, setIsAddingMarker } from '@/redux/slices/mapSlice'
 
 const YandexMap = () => {
 	const apiKey = process.env.NEXT_PUBLIC_YANDEX_API_KEY
@@ -42,12 +38,12 @@ const YandexMap = () => {
 	const dispatch = useAppDispatch()
 
 	const mapCenter =
-		useAppSelector(state => state.marks.mapCenter) || initialCoordinates
-	const hoveredMarkerId = useAppSelector(state => state.marks.hoveredMarkerId)
-	const zoom = useAppSelector(state => state.marks.zoom) || initialZoom
+		useAppSelector(state => state.map.mapCenter) || initialCoordinates
+	const hoveredMarkerId = useAppSelector(state => state.map.hoveredMarkerId)
+	const zoom = useAppSelector(state => state.map.zoom) || initialZoom
 	const isModalOpen = useAppSelector(state => state.marks.isModalOpen)
 	const selectedMarker = useAppSelector(state => state.marks.selectedMarker)
-	const isAddingMarker = useAppSelector(state => state.marks.isAddingMarker)
+	const isAddingMarker = useAppSelector(state => state.map.isAddingMarker)
 
 	const openEditModal = (marker: IMarker) => {
 		dispatch(setSelectedMarker(marker))

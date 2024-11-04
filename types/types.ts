@@ -68,11 +68,14 @@ export interface EditMarkerModalProps {
 export interface MarksState {
 	coordinates: ICoordinates | null
 	currentCoordinates: ICoordinates | null
+	isModalOpen: boolean
+	selectedMarker: IMarker | null
+}
+
+export interface MapState {
 	isMapInitialized: boolean
 	zoom: number
 	mapCenter: [number, number] | null
 	hoveredMarkerId: string | null
-	isModalOpen: boolean
-	selectedMarker: IMarker | null
 	isAddingMarker: boolean
 }

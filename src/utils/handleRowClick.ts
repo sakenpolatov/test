@@ -1,11 +1,8 @@
 import { ICoordinates } from '@@/types/types'
 import { AppDispatch } from '@/redux/store'
-import {
-	setCurrentCoordinates,
-	setMapCenter,
-	setZoom
-} from '@/redux/slices/marksSlice'
+import { setCurrentCoordinates } from '@/redux/slices/marksSlice'
 import { anchorToMap } from '@/utils/anchorToMap'
+import { setMapCenter, setZoom } from '@/redux/slices/mapSlice'
 
 export const handleRowClick = (
 	coordinates: ICoordinates,
