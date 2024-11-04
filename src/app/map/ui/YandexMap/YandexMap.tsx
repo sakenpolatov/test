@@ -1,4 +1,4 @@
-import React, { useState, FC } from 'react'
+import React from 'react'
 import {
 	YMaps,
 	Map,
@@ -19,27 +19,39 @@ import CustomPlacemark from './CustomPlacemark'
 import { IMarker } from '@@/types/types'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { handleMapClick } from './mapHandlers'
-import { setHoveredMarkerId } from '@/redux/slices/hoverSlice'
+import {
+	setHoveredMarkerId,
+	setIsModalOpen,
+	setSelectedMarker,
+	setIsAddingMarker
+} from '@/redux/slices/marksSlice'
+import {
+	ADD_MARKER,
+	CANCEL,
+	initialCoordinates,
+	initialZoom,
+	LEFT,
+	RIGHT
+} from '@/constants/variables'
 
-const YandexMap: FC = () => {
+const YandexMap = () => {
 	const apiKey = process.env.NEXT_PUBLIC_YANDEX_API_KEY
 	const { data: markers = [], isLoading } = useFetchMarksQuery()
 	const [updateMark] = useUpdateMarkMutation()
 	const [addMark] = useAddMarkMutation()
-	const [isModalOpen, setIsModalOpen] = useState(false)
-	const [selectedMarker, setSelectedMarker] = useState<IMarker | null>(null)
-	const [isAddingMarker, setIsAddingMarker] = useState(false)
-	const mapCenter = useAppSelector(state => state.marks.mapCenter) || [
-		55.751244, 37.618423
-	]
-	const hoveredMarkerId = useAppSelector(state => state.hover.hoveredMarkerId)
-
-	const zoom = useAppSelector(state => state.marks.zoom) || 10
 	const dispatch = useAppDispatch()
 
+	const mapCenter =
+		useAppSelector(state => state.marks.mapCenter) || initialCoordinates
+	const hoveredMarkerId = useAppSelector(state => state.marks.hoveredMarkerId)
+	const zoom = useAppSelector(state => state.marks.zoom) || initialZoom
+	const isModalOpen = useAppSelector(state => state.marks.isModalOpen)
+	const selectedMarker = useAppSelector(state => state.marks.selectedMarker)
+	const isAddingMarker = useAppSelector(state => state.marks.isAddingMarker)
+
 	const openEditModal = (marker: IMarker) => {
-		setSelectedMarker(marker)
-		setIsModalOpen(true)
+		dispatch(setSelectedMarker(marker))
+		dispatch(setIsModalOpen(true))
 	}
 
 	const handleSave = async (updatedData: IMarker) => {
@@ -49,15 +61,11 @@ const YandexMap: FC = () => {
 				...updatedData
 			}).unwrap()
 			console.log('Ответ сервера:', response)
-			closeEditModal()
+			dispatch(setIsModalOpen(false))
+			dispatch(setSelectedMarker(null))
 		} catch (error) {
 			console.error('Ошибка при обновлении метки:', error)
 		}
-	}
-
-	const closeEditModal = () => {
-		setIsModalOpen(false)
-		setSelectedMarker(null)
 	}
 
 	return (
@@ -77,15 +85,15 @@ const YandexMap: FC = () => {
 							handleMapClick(event, isAddingMarker, addMark)
 						}
 					>
-						<FullscreenControl options={{ float: 'right' }} />
-						<GeolocationControl options={{ float: 'left' }} />
-						<SearchControl options={{ float: 'left' }} />
+						<FullscreenControl options={{ float: RIGHT }} />
+						<GeolocationControl options={{ float: LEFT }} />
+						<SearchControl options={{ float: LEFT }} />
 						<ZoomControl options={{ position: { left: 10, top: 100 } }} />
 						<Button
 							options={{ maxWidth: 128 }}
-							data={{ content: isAddingMarker ? 'Отменить' : 'Добавить метку' }}
+							data={{ content: isAddingMarker ? CANCEL : ADD_MARKER }}
 							defaultState={{ selected: isAddingMarker }}
-							onClick={() => setIsAddingMarker(prev => !prev)}
+							onClick={() => dispatch(setIsAddingMarker(!isAddingMarker))}
 						/>
 						<Clusterer>
 							{markers.map(marker => (
@@ -103,10 +111,10 @@ const YandexMap: FC = () => {
 				</YMaps>
 			)}
 
-			{selectedMarker && (
+			{isModalOpen && (
 				<EditMarkerModal
 					opened={isModalOpen}
-					onClose={closeEditModal}
+					onClose={() => dispatch(setIsModalOpen(false))}
 					markerData={selectedMarker}
 					onSave={handleSave}
 				/>

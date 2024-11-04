@@ -57,3 +57,22 @@ export interface CustomPlacemarkProps {
 export interface CustomMapMouseEvent {
 	get: (key: string) => number[]
 }
+
+export interface EditMarkerModalProps {
+	opened: boolean
+	onClose: () => void
+	markerData: IMarker | null
+	onSave: (data: IMarker) => void
+}
+
+export interface MarksState {
+	coordinates: ICoordinates | null
+	currentCoordinates: ICoordinates | null
+	isMapInitialized: boolean
+	zoom: number
+	mapCenter: [number, number] | null
+	hoveredMarkerId: string | null
+	isModalOpen: boolean
+	selectedMarker: IMarker | null
+	isAddingMarker: boolean
+}

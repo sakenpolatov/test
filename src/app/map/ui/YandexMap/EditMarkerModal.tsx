@@ -1,14 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { Modal, Button, TextInput, Textarea } from '@mantine/core'
-import { IMarker } from '@@/types/types'
-
-interface EditMarkerModalProps {
-	opened: boolean
-	onClose: () => void
-	markerData: IMarker
-	onSave: (data: IMarker) => void
-}
+import { EditMarkerModalProps, IMarker } from '@@/types/types'
 
 const EditMarkerModal: React.FC<EditMarkerModalProps> = ({
 	opened,
@@ -17,7 +10,7 @@ const EditMarkerModal: React.FC<EditMarkerModalProps> = ({
 	onSave
 }) => {
 	const { register, handleSubmit } = useForm<IMarker>({
-		defaultValues: markerData
+		defaultValues: markerData || {}
 	})
 
 	const onSubmit = (data: IMarker) => {

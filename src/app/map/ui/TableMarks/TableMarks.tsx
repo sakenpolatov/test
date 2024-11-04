@@ -31,7 +31,7 @@ import { useFetchMarksQuery, useDeleteMarkMutation } from '@/redux/api/marksApi'
 import NoMarkers from '../NoMarkers'
 import { confirmDeleteMarker } from '@/utils/confirmDeleteMarker'
 import { handleRowClick } from '@/utils/handleRowClick'
-import { setHoveredMarkerId } from '@/redux/slices/hoverSlice'
+import { setHoveredMarkerId } from '@/redux/slices/marksSlice'
 
 const TableMarks = memo(() => {
 	const dispatch = useAppDispatch()

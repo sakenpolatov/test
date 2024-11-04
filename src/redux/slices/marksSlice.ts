@@ -1,21 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { ICoordinates } from '@@/types/types'
-
-interface MarksState {
-	coordinates: ICoordinates | null
-	currentCoordinates: ICoordinates | null
-	isMapInitialized: boolean
-	zoom: number
-	mapCenter: [number, number] | null
-}
-
-const initialState: MarksState = {
-	coordinates: null,
-	currentCoordinates: null,
-	isMapInitialized: false,
-	zoom: 9,
-	mapCenter: null
-}
+import { initialState } from '@/constants/variables'
 
 const marksSlice = createSlice({
 	name: 'marks',
@@ -36,6 +20,18 @@ const marksSlice = createSlice({
 		},
 		setMapCenter: (state, action) => {
 			state.mapCenter = action.payload
+		},
+		setHoveredMarkerId: (state, action) => {
+			state.hoveredMarkerId = action.payload
+		},
+		setIsModalOpen: (state, action) => {
+			state.isModalOpen = action.payload
+		},
+		setSelectedMarker: (state, action) => {
+			state.selectedMarker = action.payload
+		},
+		setIsAddingMarker: (state, action) => {
+			state.isAddingMarker = action.payload
 		}
 	}
 })
@@ -45,6 +41,11 @@ export const {
 	setCurrentCoordinates,
 	setMapInitialized,
 	setZoom,
-	setMapCenter
+	setMapCenter,
+	setHoveredMarkerId,
+	setIsModalOpen,
+	setSelectedMarker,
+	setIsAddingMarker
 } = marksSlice.actions
+
 export default marksSlice.reducer
