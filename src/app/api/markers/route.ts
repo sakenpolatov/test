@@ -4,8 +4,7 @@ import Marker from '@@/models/MarkerModel'
 import UserModel from '@@/models/UserModel'
 import { auth } from '@@/lib/auth'
 
-//Добавление новой метки
-
+// Добавление новой метки
 export async function POST(req: Request) {
 	try {
 		await dbConnect()
@@ -67,11 +66,18 @@ export async function POST(req: Request) {
 	}
 }
 
-//Получение всех меток
+// Получение всех меток
 export async function GET() {
 	try {
 		await dbConnect()
-		const markers = await Marker.find()
+		const session = await auth()
+		if (!session) {
+			return NextResponse.json(
+				{ message: 'Необходима авторизация' },
+				{ status: 401 }
+			)
+		}
+		const markers = await Marker.find({ user: session.user.id })
 		return NextResponse.json({ markers }, { status: 200 })
 	} catch (error) {
 		console.error(error)
